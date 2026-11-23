@@ -2325,15 +2325,53 @@ function deleteFolderGroup(type, siteName) {
   }
 }
 
+async function waitForPrintImages(container) {
+  const imgs = Array.from(container.querySelectorAll("img"));
+  await Promise.all(
+    imgs.map(async (img) => {
+      const src = img.getAttribute("src") || "";
+      if (!src) return;
+      if (!img.complete) {
+        await new Promise((resolve) => {
+          img.addEventListener("load", resolve, { once: true });
+          img.addEventListener("error", resolve, { once: true });
+        });
+      }
+      if (typeof img.decode === "function") {
+        try {
+          await img.decode();
+        } catch (_) {
+          // decode非対応または空画像時は無視して続行
+        }
+      }
+    })
+  );
+
+  // レイアウトおよびペイント反映を2フレーム待機
+  await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+  await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+async function runBatchPrint(dataList) {
+  const container = document.getElementById("batchPrintContainer");
+  generateBatchPrintHTML(dataList);
+  document.body.classList.add("batch-printing");
+
+  await waitForPrintImages(container);
+  window.print();
+
+  setTimeout(() => {
+    document.body.classList.remove("batch-printing");
+    container.innerHTML = "";
+  }, 1000);
+}
+
 function printSingleReport(key) {
   const tx = db.transaction("ky_reports", "readonly");
   const req = tx.objectStore("ky_reports").get(key);
-  req.onsuccess = () => {
+  req.onsuccess = async () => {
     if (req.result && req.result.data) {
-      generateBatchPrintHTML([req.result.data]);
-      document.body.classList.add("batch-printing");
-      window.print();
-      setTimeout(() => { document.body.classList.remove("batch-printing"); document.getElementById("batchPrintContainer").innerHTML = ""; }, 1000);
+      await runBatchPrint([req.result.data]);
     }
   };
 }
@@ -2341,7 +2379,7 @@ function printSingleReport(key) {
 function printFolderGroup(level, site, comp, month) {
   const tx = db.transaction("ky_reports", "readonly");
   const req = tx.objectStore("ky_reports").getAll();
-  req.onsuccess = () => {
+  req.onsuccess = async () => {
     const list = req.result.filter(item => item.key !== "draft_current" && !pendingDeletions.has(item.key));
     const targetDataList = [];
     list.forEach(item => {
@@ -2354,25 +2392,27 @@ function printFolderGroup(level, site, comp, month) {
       else if (level === 'company' && dSite === site && dComp === comp) targetDataList.push(d);
       else if (level === 'month' && dSite === site && dComp === comp && itemMonth === month) targetDataList.push(d);
     });
-    if (targetDataList.length === 0) { alert("印刷対象のデータがありません。"); return; }
-    generateBatchPrintHTML(targetDataList);
-    document.body.classList.add("batch-printing");
-    window.print();
-    setTimeout(() => { document.body.classList.remove("batch-printing"); document.getElementById("batchPrintContainer").innerHTML = ""; }, 1000);
+    if (targetDataList.length === 0) {
+      alert("印刷対象のデータがありません。");
+      return;
+    }
+    await runBatchPrint(targetDataList);
   };
 }
 
 function printSelectedSavedReports() {
   const selectedKeys = Array.from(document.querySelectorAll(".saved-item-chk:checked")).map(c => c.value);
-  if (selectedKeys.length === 0) { alert("一括印刷する報告書を選択してください。"); return; }
+  if (selectedKeys.length === 0) {
+    alert("一括印刷する報告書を選択してください。");
+    return;
+  }
   const tx = db.transaction("ky_reports", "readonly");
   const req = tx.objectStore("ky_reports").getAll();
-  req.onsuccess = () => {
-    const printDataList = req.result.filter(item => selectedKeys.includes(item.key) && !pendingDeletions.has(item.key)).map(item => item.data);
-    generateBatchPrintHTML(printDataList);
-    document.body.classList.add("batch-printing");
-    window.print();
-    setTimeout(() => { document.body.classList.remove("batch-printing"); document.getElementById("batchPrintContainer").innerHTML = ""; }, 1000);
+  req.onsuccess = async () => {
+    const printDataList = req.result
+      .filter(item => selectedKeys.includes(item.key) && !pendingDeletions.has(item.key))
+      .map(item => item.data);
+    await runBatchPrint(printDataList);
   };
 }
 
@@ -2405,7 +2445,7 @@ function generateBatchPrintHTML(dataList) {
     });
 
     let workerSignsHTML = "";
-    const sigs = data.signatures || {};
+    const sigs = data.signatures || data.確認欄 || {};
     for (let i = 1; i <= 10; i++) {
       workerSignsHTML += `<div class="sign-card"><div>作業員 ${i}</div><img class="sign-preview" src="${sigs[`worker_${i}`] || ''}" alt="未署名"></div>`;
     }
