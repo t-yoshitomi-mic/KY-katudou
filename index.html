@@ -1,0 +1,2545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#004085">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KY活動報告書">
+  <link rel="manifest" href="manifest.json">
+  <title>リスクアセスメント危険予知活動報告書</title>
+  <style>
+    :root {
+      --primary-color: #004085;
+      --secondary-color: #1e7e34;
+      --warning-color: #d39e00;
+      --danger-color: #bd2130;
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --border-color: #333333;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 10px;
+      color: #111;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 10px auto 5px auto;
+      background: var(--card-bg);
+      padding: 8px 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      box-sizing: border-box;
+    }
+    .app-header {
+      background: #004085;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: white;
+      text-align: left;
+    }
+    .top-menu-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    h3 {
+      margin: 3px 0 2px 0;
+      font-size: 0.8rem;
+    }
+    .status-bar {
+      background: #e9ecef;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 0.75em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .status-online { background: #28a745; }
+    .status-offline { background: #dc3545; }
+    .status-syncing { background: #ffc107; }
+    .pending-badge {
+      background: #dc3545;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 0.9em;
+      display: none;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 4px;
+      margin-bottom: 3px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group label {
+      font-size: 0.7em;
+      font-weight: bold;
+      margin-bottom: 1px;
+    }
+    input, select, textarea {
+      padding: 2px 4px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.75em;
+      width: 100%;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 22px;
+    }
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 3px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 3px;
+      font-size: 0.68em;
+    }
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 1px 2px;
+      text-align: center;
+      vertical-align: middle;
+      box-sizing: border-box;
+    }
+    th {
+      background: #e2e8f0;
+      color: #000;
+    }
+
+    .work-machinery-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+    .work-box, .machinery-box {
+      background: #fafbfc;
+      border: 1px solid var(--border-color);
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+    .box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .box-header label {
+      font-size: 0.78em;
+      font-weight: bold;
+      color: #004085;
+    }
+    .work-box textarea, .machinery-box textarea {
+      font-size: 0.9em;
+      font-weight: bold;
+      min-height: 1.1cm;
+    }
+
+    #riskTable { table-layout: fixed; min-width: 780px; }
+    #riskTable td textarea.r-auto-expand {
+      width: 100%;
+      min-height: 0.8cm;
+      height: 0.8cm;
+      padding: 2px;
+      font-size: 0.72em;
+      line-height: 1.2;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-y: hidden;
+      resize: none;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+    #riskTable td select {
+      height: 0.8cm;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+    }
+
+    .print-text-display {
+      display: none;
+    }
+
+    .score-badge {
+      font-weight: bold;
+      padding: 1px 3px;
+      border-radius: 3px;
+      border: 1px solid #333;
+    }
+    .rank-1 { background-color: #d4edda; color: #155724; }
+    .rank-2 { background-color: #fff3cd; color: #856404; }
+    .rank-3 { background-color: #f8d7da; color: #721c24; }
+
+    .highlight-section {
+      background: #fafbfc;
+      border: 1px solid var(--border-color);
+      padding: 5px 7px;
+      border-radius: 6px;
+      margin-bottom: 3px;
+    }
+    .highlight-section label {
+      font-size: 0.78em;
+      font-weight: bold;
+      color: #004085;
+      margin-bottom: 1px;
+    }
+    #safetyInstruction {
+      font-size: 0.75em;
+      line-height: 1.25;
+      min-height: 22px;
+    }
+
+    .matrix-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      gap: 4px;
+      margin-bottom: 4px;
+      font-size: 0.62em;
+    }
+    .matrix-box {
+      border: 1px solid var(--border-color);
+      padding: 2px;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+    .matrix-box h4 {
+      margin: 0 0 1px 0;
+      font-size: 0.68em;
+      text-align: center;
+      background: #e2e8f0;
+      padding: 1px;
+    }
+    .matrix-box table { font-size: 0.6em; margin-bottom: 0; }
+
+    .sign-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 3px;
+      margin-bottom: 3px;
+    }
+    .sign-card {
+      border: 1px solid var(--border-color);
+      padding: 2px;
+      border-radius: 4px;
+      text-align: center;
+      background: #fafafa;
+      font-size: 0.68em;
+    }
+    .sign-preview {
+      width: 100%;
+      height: 1cm;
+      border: 1px dashed var(--border-color);
+      margin-top: 1px;
+      background: #fff;
+      object-fit: contain;
+      box-sizing: border-box;
+    }
+    .btn {
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.75em;
+    }
+    .btn-primary { background: var(--primary-color); color: white; }
+    .btn-success { background: var(--secondary-color); color: white; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-warning { background: var(--warning-color); color: black; }
+    .btn-danger { background: var(--danger-color); color: white; }
+    .btn-info { background: #17a2b8; color: white; }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      width: 92%;
+      max-width: 450px;
+      max-height: 88vh;
+      overflow-y: auto;
+      text-align: center;
+    }
+    canvas {
+      border: 2px solid #333;
+      border-radius: 4px;
+      background: #fff;
+      touch-action: none;
+      width: 100%;
+      height: 200px;
+      display: block;
+    }
+
+    /* スマートフォン画面向けレスポンシブ最適化 */
+    @media screen and (max-width: 768px) {
+      body { padding: 4px; }
+      .container { margin: 2px auto; padding: 6px; }
+      .app-header h1 { font-size: 0.95rem; }
+      .top-menu-bar .btn { padding: 6px 8px; font-size: 0.72em; flex: 1 1 auto; text-align: center; }
+      input, select, textarea { font-size: 16px !important; padding: 5px 6px; }
+      .work-machinery-grid { grid-template-columns: 1fr; }
+      .matrix-container { grid-template-columns: 1fr; }
+      .confirm-sign-grid { grid-template-columns: repeat(3, 1fr) !important; }
+      .worker-sign-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .sign-preview { height: 1.3cm; }
+      .btn { min-height: 32px; }
+    }
+
+    .tree-folder-site {
+      background: #2b3035;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      font-size: 0.82em;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .tree-folder-company {
+      background: #e9ecef;
+      color: #212529;
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin: 3px 0 3px 10px;
+      font-size: 0.78em;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid var(--primary-color);
+      cursor: pointer;
+      user-select: none;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .tree-folder-month {
+      background: #f8f9fa;
+      color: #333;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin: 2px 0 2px 20px;
+      font-size: 0.75em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 3px solid var(--warning-color);
+      cursor: pointer;
+      user-select: none;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .tree-report-item {
+      background: #ffffff;
+      border: 1px solid #ced4da;
+      padding: 5px 8px;
+      border-radius: 4px;
+      margin: 2px 0 2px 28px;
+      font-size: 0.75em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .tree-children { display: none; }
+    .tree-children.open { display: block; }
+    .toggle-icon { font-size: 0.75em; margin-right: 4px; display: inline-block; }
+
+    .print-only-title { display: none; }
+    #settingsScreen { display: none; }
+    #batchPrintContainer { display: none; }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 4mm 8mm 3mm 8mm;
+      }
+      body { background: white; padding: 0; margin: 0; }
+      .no-print, .app-header, .status-bar, .action-bar, .btn, .row-preset-select, .modal-overlay { display: none !important; }
+      .table-responsive { overflow: visible !important; }
+      #riskTable { min-width: 100% !important; }
+      
+      .print-only-title {
+        display: block !important;
+        text-align: center;
+        font-size: 1.0rem;
+        font-weight: bold;
+        margin-bottom: 2px;
+      }
+
+      #riskTable th:first-child,
+      #riskTable td:first-child {
+        display: none !important;
+      }
+
+      #riskTable tbody tr.empty-risk-row,
+      #riskTbody tr.empty-risk-row {
+        display: none !important;
+      }
+
+      #riskTable th:nth-child(2) { width: 28% !important; }
+      #riskTable th:nth-child(6) { width: 34% !important; }
+
+      body:not(.batch-printing) .container { box-shadow: none; padding: 0; margin: 0 auto !important; max-width: 100% !important; width: 100% !important; }
+      body.batch-printing .container { display: none !important; }
+      body.batch-printing #batchPrintContainer { display: block !important; }
+      .print-page { page-break-after: always; padding: 0; margin: 0; width: 100%; }
+
+      h3 { font-size: 0.62rem; margin: 1px 0; }
+      .matrix-container { display: grid !important; grid-template-columns: 1fr 1fr 1.2fr !important; gap: 2px !important; margin-bottom: 2px !important; font-size: 0.48em !important; }
+      .matrix-box table { font-size: 0.56em !important; }
+      fieldset { padding: 1px 4px !important; margin-bottom: 2px !important; border-color: #333 !important; }
+      .form-grid { gap: 2px !important; margin-bottom: 1px !important; }
+      input, select, textarea { border: none !important; background: transparent !important; padding: 0 !important; font-size: 0.75em !important; appearance: none; -webkit-appearance: none; }
+      
+      .work-machinery-grid { display: grid !important; grid-template-columns: 1.2fr 1fr !important; gap: 3px !important; margin-bottom: 2px !important; }
+      .work-box, .machinery-box, .highlight-section { border: 1px solid #333 !important; background: transparent !important; padding: 2px 4px !important; margin-bottom: 2px !important; }
+      .work-box textarea, .machinery-box textarea {
+        min-height: 0.7cm !important;
+        height: auto !important;
+        font-size: 0.75em !important;
+        line-height: 1.15 !important;
+      }
+
+      #riskTable td textarea.r-auto-expand,
+      #safetyInstruction {
+        display: none !important;
+      }
+      .print-text-display {
+        display: block !important;
+        text-align: left;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.15;
+        padding: 1px 2px;
+      }
+      #riskTable .print-text-display {
+        font-size: 0.88em !important;
+        line-height: 1.12 !important;
+      }
+      .highlight-section input,
+      .highlight-section .print-text-display {
+        font-size: 0.75em !important;
+        line-height: 1.15 !important;
+        color: #111 !important;
+      }
+
+      #riskTable td select { height: auto !important; border: none !important; font-size: 0.95em !important; }
+      table { margin-bottom: 2px !important; font-size: 0.58em !important; border-color: #333 !important; }
+      th, td { padding: 1px 2px !important; border-color: #333 !important; }
+
+      .sign-grid { gap: 3px !important; margin-bottom: 2px !important; }
+      .confirm-sign-grid { grid-template-columns: repeat(3, 1fr) !important; }
+      .worker-sign-grid { grid-template-columns: repeat(5, 1fr) !important; }
+      .sign-card { padding: 1px !important; font-size: 0.55em !important; border-color: #333 !important; }
+      .sign-preview { height: 1cm !important; border: 1px solid #333 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="app-header">
+    <h1>リスクアセスメント危険予知活動報告書</h1>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="font-size:0.75em;">PC・スマホ対応 / オフライン＆Drive自動同期</span>
+      <button id="installAppBtn" class="btn btn-warning" style="display:none; font-size:0.72em; padding:3px 8px;" onclick="installPWA()">📲 アプリをインストール</button>
+    </div>
+  </div>
+
+  <div class="top-menu-bar no-print">
+    <button class="btn btn-secondary" onclick="resetForm()">新規作成</button>
+    <button class="btn btn-success" onclick="saveAndSyncNow()">記録を保存 (自動同期)</button>
+    <button class="btn btn-warning" onclick="openLoadModal()">保存記録 (フォルダ閲覧)</button>
+    <button class="btn btn-info" onclick="openMasterModal()">現場・マスター管理</button>
+    <button class="btn btn-info" onclick="openMachineryMasterModal()">使用機械マスタ管理</button>
+    <button class="btn btn-primary" onclick="openPresetManageModal()">工程リスクマスタ管理</button>
+    <button class="btn btn-primary" onclick="prepareAndPrint()" style="background:#6c757d;">A4印刷・PDF</button>
+    <button class="btn btn-secondary" onclick="openSettingsScreen()" style="background:#343a40; color:white;">同期設定</button>
+  </div>
+
+  <div class="status-bar no-print">
+    <div>
+      <span id="networkIndicator" class="status-indicator status-online"></span>
+      <span id="syncStatus">端末内に自動保存中 (オフライン動作対応)</span>
+      <span id="pendingSyncBadge" class="pending-badge">未送信あり (通信復帰で自動同期)</span>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <button class="btn btn-info" style="font-size:0.72em; padding:2px 6px;" onclick="autoFullSync(true)">🔄 最新データ取得・同期</button>
+    </div>
+  </div>
+
+  <div id="inputScreen">
+    <div class="print-only-title">リスクアセスメント危険予知活動報告書</div>
+
+    <fieldset style="border:1px solid #333; border-radius:6px; margin-bottom:3px; padding:3px 6px;">
+      <legend style="font-weight:bold; font-size:0.75em;">基本情報</legend>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>現場名</label>
+          <select id="siteSelect" onchange="handleInputChange()"></select>
+        </div>
+        <div class="form-group">
+          <label>協力会社名</label>
+          <select id="companySelect" onchange="handleInputChange()"></select>
+        </div>
+        <div class="form-group">
+          <label>実施日</label>
+          <input type="date" id="kyDate" onchange="handleInputChange()">
+        </div>
+        <div class="form-group">
+          <label>天候</label>
+          <select id="weather" onchange="handleInputChange()">
+            <option value="">-- 選択してください --</option>
+            <option value="晴れ">晴れ</option>
+            <option value="曇／晴">曇／晴</option>
+            <option value="曇り">曇り</option>
+            <option value="曇／雨">曇／雨</option>
+            <option value="雨">雨</option>
+            <option value="雪">雪</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="matrix-container">
+      <div class="matrix-box">
+        <h4>A. 重大性の見積もり</h4>
+        <table>
+          <tr><th>レベル</th><th>点</th><th>定義</th></tr>
+          <tr><td>致命的</td><td>4</td><td>死亡・永久障害</td></tr>
+          <tr><td>重大</td><td>3</td><td>休業(1ヶ月以上)</td></tr>
+          <tr><td>中程度</td><td>2</td><td>休業(1ヶ月未満)</td></tr>
+          <tr><td>軽度</td><td>1</td><td>不休・かすり傷</td></tr>
+        </table>
+      </div>
+      <div class="matrix-box">
+        <h4>B. 可能性の見積もり</h4>
+        <table>
+          <tr><th>レベル</th><th>点</th><th>頻度</th></tr>
+          <tr><td>極めて高い</td><td>4</td><td>極めて高い</td></tr>
+          <tr><td>比較的高い</td><td>3</td><td>ある程度高い</td></tr>
+          <tr><td>比較的低い</td><td>2</td><td>低い</td></tr>
+          <tr><td>ほとんどない</td><td>1</td><td>極めて低い</td></tr>
+        </table>
+      </div>
+      <div class="matrix-box">
+        <h4>C/D. リスク評価と対応</h4>
+        <table>
+          <tr><th>評価(A×B)</th><th>危険度</th><th>対応・資源投入</th></tr>
+          <tr><td>16〜12</td><td>高(Ⅲ)</td><td>作業停止・最優先措置</td></tr>
+          <tr><td>9〜6</td><td>中(Ⅱ)</td><td>速やかに対策・経営判断</td></tr>
+          <tr><td>4〜1</td><td>低(Ⅰ)</td><td>工事実施・監視継続</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="work-machinery-grid">
+      <div class="work-box">
+        <div class="box-header"><label>本日の作業内容</label></div>
+        <textarea id="todayWorkContent" placeholder="例: 道路改良区間の土砂掘削および残土搬出作業" oninput="handleInputChange()"></textarea>
+      </div>
+
+      <div class="machinery-box">
+        <div class="box-header">
+          <label>使用する機械等（複数選択可）</label>
+          <select id="machinerySelectDropdown" class="no-print" style="width:auto; font-size:0.7em;" onchange="appendSelectedMachinery(this)">
+            <option value="">+ マスタから機械を追加選択</option>
+          </select>
+        </div>
+        <textarea id="todayMachineryContent" placeholder="例: バックホウ(0.4m3)、10tダンプトラック" oninput="handleInputChange()"></textarea>
+      </div>
+    </div>
+
+    <h3>工程別リスクアセスメント</h3>
+    <div class="table-responsive">
+      <table id="riskTable">
+        <thead>
+          <tr>
+            <th style="width: 15%;">作業名/内容</th>
+            <th style="width: 23%;">予測される危険要因</th>
+            <th style="width: 5%;">重篤</th>
+            <th style="width: 5%;">可能性</th>
+            <th style="width: 9%;">対策前</th>
+            <th style="width: 23%;">安全対策 (管理策)</th>
+            <th style="width: 5%;">重篤</th>
+            <th style="width: 5%;">可能性</th>
+            <th style="width: 9%;">対策後</th>
+            <th style="width: 6%;" class="no-print">操作</th>
+          </tr>
+        </thead>
+        <tbody id="riskTbody"></tbody>
+      </table>
+    </div>
+    <button class="btn btn-secondary no-print" onclick="addRiskRow()" style="margin-bottom:2px;">+ 行を追加</button>
+
+    <div class="highlight-section">
+      <div class="form-grid" style="margin-bottom:3px;">
+        <div class="form-group" style="grid-column: span 2;">
+          <label>本日の行動目標</label>
+          <input type="text" id="targetGoal" placeholder="例: 足元注意で転倒災害ゼロ！" oninput="handleInputChange()">
+        </div>
+        <div class="form-group">
+          <label>指差し呼称</label>
+          <input type="text" id="pointingCall" placeholder="例: 足元ヨシ！" oninput="handleInputChange()">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>元方よりの安全指示事項</label>
+        <textarea id="safetyInstruction" placeholder="元方指示事項を入力..." oninput="syncPrintMirrors(); handleInputChange();"></textarea>
+        <div id="safetyInstructionPrint" class="print-text-display"></div>
+      </div>
+    </div>
+
+    <h3>確認欄</h3>
+    <div class="sign-grid confirm-sign-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="sign-card">
+        <div>統括安全衛生責任者</div>
+        <img id="img_sign_motouke" class="sign-preview" alt="未署名">
+        <button class="btn btn-secondary no-print" style="font-size:0.6em; margin-top:1px;" onclick="openSignatureModal('motouke', '統括安全衛生責任者 署名')">署名</button>
+      </div>
+      <div class="sign-card">
+        <div>安全担当者</div>
+        <img id="img_sign_safety" class="sign-preview" alt="未署名">
+        <button class="btn btn-secondary no-print" style="font-size:0.6em; margin-top:1px;" onclick="openSignatureModal('safety', '安全担当者 署名')">署名</button>
+      </div>
+      <div class="sign-card">
+        <div>職長</div>
+        <img id="img_sign_foreman" class="sign-preview" alt="未署名">
+        <button class="btn btn-secondary no-print" style="font-size:0.6em; margin-top:1px;" onclick="openSignatureModal('foreman', '職長 署名')">署名</button>
+      </div>
+    </div>
+
+    <h3>作業参加者名（最大10名）</h3>
+    <div class="sign-grid worker-sign-grid" id="workerSignGrid" style="grid-template-columns: repeat(5, 1fr);"></div>
+  </div>
+
+  <div id="settingsScreen">
+    <h3 style="color:#004085; border-bottom:2px solid #004085; padding-bottom:4px; margin-bottom:8px;">Google Drive 同期設定（PC・スマホ共有）</h3>
+    <p style="font-size:0.75em; color:#555; margin-bottom:8px;">
+      PCとスマートフォンで同じGoogle Apps ScriptのウェブアプリURLを設定すると、Wi-Fi等のオンライン環境下で自動的にGoogleドライブへ同期・共有されます。
+    </p>
+    
+    <div class="form-group" style="margin-bottom:8px;">
+      <label>Apps Script ウェブアプリURL</label>
+      <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+      <button class="btn btn-primary" onclick="saveGasUrl()">URLを保存して同期テスト</button>
+      <button class="btn btn-success" onclick="syncToGoogleDrive(true)">今すぐGoogleドライブへ送信</button>
+      <button class="btn btn-info" onclick="fetchReportsFromDrive(true)">Googleドライブから最新を取得</button>
+    </div>
+
+    <div style="background:#f8f9fa; border:1px solid #ced4da; padding:8px; border-radius:6px; margin-bottom:12px; font-size:0.75em; text-align:left;">
+      <b>📲 PC・スマートフォンへのインストール方法（ホーム画面追加）：</b>
+      <ul style="margin:4px 0 0 18px; padding:0;">
+        <li><b>Android (Chrome):</b> 右上の「⋮」メニュー ＞ 「アプリをインストール」または「ホーム画面に追加」</li>
+        <li><b>iPhone / iPad (Safari):</b> 下部の共有アイコン（□↑） ＞ 「ホーム画面に追加」</li>
+        <li><b>Windows / Mac (Chrome / Edge):</b> アドレスバー右端のインストールアイコン（パソコン＋下矢印）をクリック</li>
+      </ul>
+      <div style="margin-top:4px; color:#555;">※一度アプリを開いておけば、現場で圏外（オフライン）になってもすべての入力・署名・保存が動作し、Wi-Fi等に繋がった瞬間に自動同期されます。</div>
+    </div>
+
+    <div>
+      <button class="btn btn-secondary" onclick="closeSettingsScreen()">入力画面に戻る</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="batchPrintContainer"></div>
+
+<div id="sigModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3 id="modalTitle">手書き署名</h3>
+    <canvas id="sigCanvas" width="400" height="200"></canvas>
+    <div style="margin-top:10px; display:flex; justify-content:space-between;">
+      <button class="btn btn-secondary" onclick="clearCanvas()">クリア</button>
+      <div>
+        <button class="btn btn-secondary" onclick="closeSignatureModal()">キャンセル</button>
+        <button class="btn btn-primary" onclick="saveSignature()">確定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="masterModal" class="modal-overlay">
+  <div class="modal-content" style="max-width:950px; text-align:left;">
+    <h3>現場名・協力会社名の登録・管理</h3>
+    <div style="display:flex; gap:10px; margin-bottom:8px;">
+      <input type="text" id="newSiteInput" placeholder="新しい現場名を入力">
+      <button class="btn btn-primary" onclick="addSiteMaster()">現場追加</button>
+    </div>
+    <ul id="siteMasterList" style="list-style:none; padding:0; margin-bottom:12px; max-height:110px; overflow-y:auto; border:1px solid #333; padding:5px;"></ul>
+
+    <div style="display:flex; gap:10px; margin-bottom:8px;">
+      <input type="text" id="newCompanyInput" placeholder="新しい協力会社名を入力">
+      <button class="btn btn-primary" onclick="addCompanyMaster()">会社追加</button>
+    </div>
+    <ul id="companyMasterList" style="list-style:none; padding:0; margin-bottom:12px; max-height:110px; overflow-y:auto; border:1px solid #333; padding:5px;"></ul>
+
+    <div style="text-align:right;"><button class="btn btn-secondary" onclick="closeMasterModal()">閉じる</button></div>
+  </div>
+</div>
+
+<div id="machineryMasterModal" class="modal-overlay">
+  <div class="modal-content" style="max-width:550px; text-align:left;">
+    <h3>使用機械マスタ管理</h3>
+    <div style="display:flex; gap:10px; margin-bottom:8px;">
+      <input type="text" id="newMachineryInput" placeholder="新しい使用機械名を入力">
+      <button class="btn btn-primary" onclick="addMachineryMasterItem()">機械追加</button>
+    </div>
+    <div style="max-height:220px; overflow-y:auto; border:1px solid #333; padding:4px; margin-bottom:12px;">
+      <ul id="machineryMasterList" style="list-style:none; padding:0; margin:0;"></ul>
+    </div>
+    <div style="text-align:right;"><button class="btn btn-secondary" onclick="closeMachineryMasterModal()">閉じる</button></div>
+  </div>
+</div>
+
+<div id="presetManageModal" class="modal-overlay">
+  <div class="modal-content" style="max-width:900px; text-align:left;">
+    <h3>工程リスクアセスメントマスタ管理（個別管理）</h3>
+    <p style="font-size:0.75em; color:#555; margin:2px 0 6px 0;">登録されている危険要因を自由に追加・編集・削除できます。</p>
+    
+    <fieldset style="border:1px solid #004085; padding:6px; border-radius:6px; margin-bottom:10px; background:#f8fafc;">
+      <legend style="font-weight:bold; font-size:0.75em; color:#004085;" id="presetFormLegend">新規マスタ項目の個別追加登録</legend>
+      <input type="hidden" id="editPresetIndex" value="-1">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:4px; margin-bottom:4px;">
+        <div><label style="font-size:0.65em; font-weight:bold;">工種名</label><input type="text" id="mAddName" placeholder="例: 車両系建機"></div>
+        <div><label style="font-size:0.65em; font-weight:bold;">作業内容</label><input type="text" id="mAddTask" placeholder="例: 車両系建設機械の運転"></div>
+        <div><label style="font-size:0.65em; font-weight:bold;">予測される危険要因</label><input type="text" id="mAddHazard" placeholder="例: 埋設ケーブルの損傷"></div>
+        <div><label style="font-size:0.65em; font-weight:bold;">対策前重篤(1-4)</label><select id="mAddSevB"><option value="4">4</option><option value="3" selected>3</option><option value="2">2</option><option value="1">1</option></select></div>
+        <div><label style="font-size:0.65em; font-weight:bold;">対策前頻度(1-4)</label><select id="mAddFreqB"><option value="4">4</option><option value="3" selected>3</option><option value="2">2</option><option value="1">1</option></select></div>
+        <div><label style="font-size:0.65em; font-weight:bold;">対策後重篤(1-4)</label><select id="mAddSevA"><option value="4">4</option><option value="3" selected>3</option><option value="2">2</option><option value="1">1</option></select></div>
+        <div><label style="font-size:0.65em; font-weight:bold;">対策後頻度(1-4)</label><select id="mAddFreqA"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1" selected>1</option></select></div>
+      </div>
+      <div style="margin-bottom:4px;">
+        <label style="font-size:0.65em; font-weight:bold;">安全対策 (管理策)</label>
+        <textarea id="mAddMeasure" placeholder="①埋設物の位置、深さを試掘にて確認する..." style="height:35px;"></textarea>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-primary" id="presetSubmitBtn" onclick="savePresetMasterItem()">個別マスタへ新規登録</button>
+        <button class="btn btn-secondary" id="presetCancelBtn" style="display:none;" onclick="cancelPresetEdit()">編集キャンセル</button>
+      </div>
+    </fieldset>
+
+    <div style="max-height:220px; overflow-y:auto; border:1px solid #333; padding:4px; margin-bottom:10px;">
+      <table style="width:100%; font-size:0.72em;" id="presetTableList">
+        <thead><tr><th>工種</th><th>作業内容</th><th>予測される危険要因</th><th>対策前</th><th>対策後</th><th>操作</th></tr></thead>
+        <tbody id="presetListTbody"></tbody>
+      </table>
+    </div>
+    <div style="text-align:right;"><button class="btn btn-secondary" onclick="closePresetManageModal()">閉じる</button></div>
+  </div>
+</div>
+
+<div id="loadModal" class="modal-overlay">
+  <div class="modal-content" style="max-width:950px; text-align:left;">
+    <h3>📁 現場・協力会社・月別 過去KY報告書ツリー構造フォルダ</h3>
+    <p style="font-size:0.75em; color:#555; margin:2px 0 8px 0;">各階層をクリックして開閉できます。</p>
+    
+    <div class="form-grid" style="margin-bottom:8px;">
+      <div class="form-group">
+        <label>📁 現場名で絞り込み</label>
+        <select id="filterSite" onchange="renderSavedTree()"></select>
+      </div>
+      <div class="form-group">
+        <label>📁 協力会社で絞り込み</label>
+        <select id="filterCompany" onchange="renderSavedTree()"></select>
+      </div>
+      <div class="form-group">
+        <label>📂 対象月で絞り込み (YYYY-MM)</label>
+        <input type="month" id="filterMonth" onchange="renderSavedTree()">
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+      <div>
+        <label style="font-size:0.75em;"><input type="checkbox" id="selectAllSaved" onchange="toggleSelectAllSaved(this)"> 全選択</label>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="btn btn-danger" onclick="deleteSelectedSavedReports()">選択した報告書を削除</button>
+        <button class="btn btn-info" onclick="printSelectedSavedReports()">選択した報告書を一括印刷</button>
+      </div>
+    </div>
+
+    <div id="savedTreeContainer" style="max-height:340px; overflow-y:auto; border:1px solid #333; padding:6px; margin-bottom:12px; background:#fff;"></div>
+    
+    <div style="text-align:right;"><button class="btn btn-secondary" onclick="closeLoadModal()">保存して閉じる</button></div>
+  </div>
+</div>
+
+<script>
+// Service Worker 登録（PWA・オフライン動作）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker registered:', reg.scope))
+      .catch(err => console.warn('Service Worker registration failed:', err));
+  });
+}
+
+// PWA インストールプロンプト制御
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const installBtn = document.getElementById('installAppBtn');
+  if (installBtn) installBtn.style.display = 'inline-block';
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  const installBtn = document.getElementById('installAppBtn');
+  if (installBtn) installBtn.style.display = 'none';
+});
+
+async function installPWA() {
+  if (!deferredPrompt) {
+    alert("ブラウザのメニューから「アプリをインストール」または「ホーム画面に追加」を選択してください。");
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    deferredPrompt = null;
+    document.getElementById('installAppBtn').style.display = 'none';
+  }
+}
+
+const pendingDeletions = new Set();
+let db = null;
+let currentSigKey = null;
+const signatures = {};
+let isSyncingNow = false;
+
+// 未同期フラグ管理（オフライン時に保存されたデータの追跡）
+function setHasPendingSync(flag) {
+  localStorage.setItem("ky_has_pending_sync", flag ? "true" : "false");
+  updatePendingBadge();
+}
+
+function hasPendingSync() {
+  return localStorage.getItem("ky_has_pending_sync") === "true";
+}
+
+function updatePendingBadge() {
+  const badge = document.getElementById("pendingSyncBadge");
+  if (!badge) return;
+  badge.style.display = hasPendingSync() ? "inline-block" : "none";
+}
+
+function normalizeDateStr(str) {
+  if (!str) return "";
+  if (str instanceof Date && !isNaN(str.getTime())) {
+    const y = str.getFullYear();
+    const m = String(str.getMonth() + 1).padStart(2, '0');
+    const d = String(str.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  let s = String(str).trim();
+  if (s.includes("T")) s = s.split("T")[0];
+  s = s.replace(/\//g, "-").replace(/\./g, "-");
+  const match = s.match(/(\d{2,4})[^\d](\d{1,2})[^\d](\d{1,2})/);
+  if (match) {
+    let y = match[1].length === 2 ? "20" + match[1] : match[1];
+    const m = match[2].padStart(2, '0');
+    const d = match[3].padStart(2, '0');
+    if (parseInt(y) >= 2020 && parseInt(y) <= 2035) return `${y}-${m}-${d}`;
+  }
+  const dt = new Date(str);
+  if (!isNaN(dt.getTime())) {
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const d = String(dt.getDate()).padStart(2, '0');
+    if (y >= 2020 && y <= 2035) return `${y}-${m}-${d}`;
+  }
+  return "";
+}
+
+function cleanFieldValue(val) {
+  return String(val ?? "").replace(/[\s　]+/g, "");
+}
+
+function hasIncompleteRiskField(task, hazard, measure) {
+  return !cleanFieldValue(task) || !cleanFieldValue(hazard) || !cleanFieldValue(measure);
+}
+
+function syncPrintMirrors() {
+  document.querySelectorAll("#riskTbody tr").forEach(tr => {
+    const taskTa = tr.querySelector(".r-task");
+    const taskVal = taskTa ? taskTa.value : "";
+
+    const hazardTa = tr.querySelector(".r-hazard");
+    const hazardDiv = tr.querySelector(".r-hazard-print");
+    const hazardVal = hazardTa ? hazardTa.value : "";
+    if (hazardDiv) hazardDiv.textContent = hazardVal;
+
+    const measureTa = tr.querySelector(".r-measure");
+    const measureDiv = tr.querySelector(".r-measure-print");
+    const measureVal = measureTa ? measureTa.value : "";
+    if (measureDiv) measureDiv.textContent = measureVal;
+
+    if (hasIncompleteRiskField(taskVal, hazardVal, measureVal)) {
+      tr.classList.add("empty-risk-row");
+    } else {
+      tr.classList.remove("empty-risk-row");
+    }
+  });
+
+  const siTa = document.getElementById("safetyInstruction");
+  const siDiv = document.getElementById("safetyInstructionPrint");
+  if (siTa && siDiv) siDiv.textContent = siTa.value;
+}
+
+function prepareAndPrint() {
+  syncPrintMirrors();
+  window.print();
+}
+
+window.addEventListener("beforeprint", syncPrintMirrors);
+
+function openSettingsScreen() {
+  document.getElementById("inputScreen").style.display = "none";
+  document.getElementById("settingsScreen").style.display = "block";
+  document.getElementById("gasUrlInput").value = localStorage.getItem("gasWebAppUrl") || "";
+}
+
+function closeSettingsScreen() {
+  document.getElementById("settingsScreen").style.display = "none";
+  document.getElementById("inputScreen").style.display = "block";
+}
+
+async function saveGasUrl() {
+  const url = document.getElementById("gasUrlInput").value.trim();
+  localStorage.setItem("gasWebAppUrl", url);
+  alert("Google Apps ScriptのウェブアプリURLを保存しました！");
+  if (url && navigator.onLine) {
+    await autoFullSync(true);
+  }
+}
+
+let deletedMasters = JSON.parse(localStorage.getItem("deletedMasters")) || {
+  sites: [],
+  companies: [],
+  machinery: [],
+  presets: []
+};
+
+function saveDeletedMasters() {
+  localStorage.setItem("deletedMasters", JSON.stringify(deletedMasters));
+}
+
+let machineryMaster = JSON.parse(localStorage.getItem("machineryMaster")) || [
+  "バックホウ (0.4m3)", "バックホウ (0.2m3)", "25tラフテレーンクレーン", "10tダンプトラック", "4tダンプトラック", "タイヤローラー", "振動ローラー", "発電機・溶接機"
+];
+
+let defaultPresetData = [
+  { name: "共通工2", task: "車両系建設機械の運転", hazard: "埋設ケーブルの損傷", severityBefore: 4, freqBefore: 3, measure: "①埋設物の位置、深さを試掘にて確認する。\n②埋設物付近の掘削は手掘りで行う。", severityAfter: 4, freqAfter: 1 },
+  { name: "共通工2", task: "車両系建設機械の運転", hazard: "架空線の切断", severityBefore: 4, freqBefore: 3, measure: "①見張人を配置し監視する。\n②注意喚起の表示を設置する。", severityAfter: 4, freqAfter: 1 },
+  { name: "共通工2", task: "車両系建設機械の運転", hazard: "送電線短絡", severityBefore: 4, freqBefore: 3, measure: "①電力会社の立会(高さ、離隔距離の確認)\n②見張人を配置し監視する\n③送電線下に危険標識を設置する。", severityAfter: 4, freqAfter: 1 },
+  { name: "共通工2", task: "ハンドブレーカによるコンクリートのはつり", hazard: "コンクリートとの挟まれ", severityBefore: 3, freqBefore: 3, measure: "①ハンドブレーカは逆手に持たないことを徹底する。\n②指はハンドルの外に出さないことを徹底する。\n③ブレーカ作業は危険な作業であることを周知徹底する。", severityAfter: 2, freqAfter: 2 },
+  { name: "共通工2", task: "クレーンによる敷鉄板の移動作業", hazard: "フックが外れて足元に激突する", severityBefore: 4, freqBefore: 3, measure: "①敷鉄板吊り用の外れ止め付きフックを使用して吊り上げる。\n②吊荷の下には絶対入らない。\n③クレーンオペレータと玉掛者との合図確認の徹底。", severityAfter: 4, freqAfter: 1 },
+  { name: "共通工2", task: "ダンプトラックの運転", hazard: "対向車を避けようと路肩に寄り過ぎて路肩が崩れて横転する", severityBefore: 4, freqBefore: 3, measure: "①退避場ですれ違う。\n②路肩に近寄らないようにカラーコーン、旗で明示する。", severityAfter: 4, freqAfter: 1 },
+  { name: "共通工2", task: "工事用車両の出入り", hazard: "ダンプでヤードに進入する際、後方から来た軽乗用車と衝突する", severityBefore: 3, freqBefore: 3, measure: "①バックミラー、目視等で確認をする。\n②新規入場時教育にてハザードマップを使って順路を明確にする。\n③右折入場・右折退場禁止等の現場ルールを徹底する。", severityAfter: 3, freqAfter: 2 },
+  { name: "共通工2", task: "通勤時の運転", hazard: "交差点で一時停止後、左側から直進してきたトラックと衝突する", severityBefore: 3, freqBefore: 3, measure: "①バックミラー、目視等で前後・左右の確認を行う。\n②通行車両が少ない道でも通勤時には車両が増加することを意識する。", severityAfter: 3, freqAfter: 2 },
+  { name: "共通工2", task: "バッテリー充電", hazard: "ブースターケーブル接続時、バッテリー破裂・液飛散", severityBefore: 3, freqBefore: 2, measure: "①正しい手順で接続し、最後の接続はエンジンの金属部へ接続する。\n②保護メガネの使用。", severityAfter: 3, freqAfter: 1 },
+  { name: "共通工2", task: "ガス溶接(切断)", hazard: "ホース取り外し時、残圧によりホースが跳ね顔面打撲", severityBefore: 3, freqBefore: 2, measure: "①ガス切断終了後は酸素弁を解放し残圧ゼロを確認する。", severityAfter: 3, freqAfter: 1 },
+  { name: "共通工2", task: "玉掛作業", hazard: "場所打杭鉄筋建込中、玉掛ワイヤが外れ滑車が作業員に激突", severityBefore: 4, freqBefore: 3, measure: "①吊荷の下には絶対入らない。\n②鉄筋建込時、クレーンの補巻きはフックからシャックルに交換する。", severityAfter: 4, freqAfter: 1 },
+  { name: "共通工2", task: "資材の運搬(アセチレン)", hazard: "ボンベ運搬立掛け時、奥のボンベとの間に指挟まれ", severityBefore: 3, freqBefore: 3, measure: "①指の位置を確認する。\n②二人で行う。\n③間仕切りを設ける。", severityAfter: 3, freqAfter: 2 },
+  { name: "共通工2", task: "コンクリート二次製品の切断", hazard: "切断中、エンジンカッターが跳ね上がり作業員に激突", severityBefore: 3, freqBefore: 3, measure: "①適切な場所で正しい姿勢で作業する。\n②熟練者が行う。", severityAfter: 3, freqAfter: 2 },
+  { name: "共通工2", task: "型枠切断(電動丸ノコ)", hazard: "丸ノコが跳ね返り体に接触し負傷", severityBefore: 4, freqBefore: 2, measure: "①安定した場所に置き安定した姿勢で行う。\n②利き手以外での使用禁止。", severityAfter: 4, freqAfter: 1 },
+  { name: "共通工2", task: "チェーンソー研磨", hazard: "チェーンソーの刃を研磨中、粉塵が口や目に入る", severityBefore: 3, freqBefore: 3, measure: "①防じんマスク、メガネの着用。\n②チェックリストによる点検を実施する。", severityAfter: 3, freqAfter: 1 },
+  { name: "共通工2", task: "伐採作業(チェーンソー)", hazard: "伐採作業中、足を切る", severityBefore: 3, freqBefore: 3, measure: "①低い姿勢で行う。\n②地固めして安定した足場を確保する。\n③作業手順書を周知する。", severityAfter: 3, freqAfter: 2 },
+  { name: "共通工2", task: "伐採作業(立木)", hazard: "立木との激突", severityBefore: 3, freqBefore: 3, measure: "①一方向から伐採する。\n②倒木時の合図を徹底する。", severityAfter: 3, freqAfter: 1 },
+  { name: "共通工2", task: "伐採作業(草刈機)", hazard: "緩斜面でバランスを崩し転倒、膝が切株にあたる", severityBefore: 3, freqBefore: 3, measure: "①作業場所の状況を事前確認。\n②無理な姿勢での作業禁止。\n③膝すねガードの着用。", severityAfter: 3, freqAfter: 2 },
+  { name: "共通工2", task: "全ての作業", hazard: "高温環境下での熱中症(6〜8月)", severityBefore: 3, freqBefore: 4, measure: "①水分、塩分の適切な摂取と涼しく適度な休憩設備を整える。\n②新規入場時に既往症を確認する。", severityAfter: 2, freqAfter: 3 },
+  { name: "共通工2", task: "交通誘導作業", hazard: "体調不良のまま作業し現場で熱中症", severityBefore: 3, freqBefore: 4, measure: "①体調不良時は速やかに職長に申告。\n②体調管理に努めることを指導。", severityAfter: 3, freqAfter: 2 },
+  { name: "共通工2", task: "資材仮置き準備", hazard: "カッターナイフで梱包紐を切断中、手を切る", severityBefore: 3, freqBefore: 2, measure: "①体勢を整えて利き腕で行い切断方向に手を置かない。\n②皮手袋を着用する。", severityAfter: 3, freqAfter: 1 },
+  { name: "共通工2", task: "高圧洗浄機点検作業", hazard: "レバーを握った際ノズルから突然水が噴射し眼に直撃", severityBefore: 3, freqBefore: 3, measure: "①ノズル先端に人がいないことを確認する。\n②保護メガネを着用する。", severityAfter: 3, freqAfter: 1 },
+  { name: "共通工2", task: "施工状況確認(場内巡回)", hazard: "不安定な転石上を歩行し石がころがり足を挟まれる", severityBefore: 3, freqBefore: 3, measure: "①不安定な転石箇所は立入禁止。\n②安全通路を確保する。", severityAfter: 3, freqAfter: 1 },
+  { name: "高架橋配筋工", task: "柱帯鉄筋組立", hazard: "仮結束していた帯鉄筋の束が落下し作業員に激突", severityBefore: 3, freqBefore: 2, measure: "①短管等で落下防止資材を確実に足場に設置する。", severityAfter: 3, freqAfter: 1 },
+  { name: "高架橋配筋工", task: "柱フープ筋組立", hazard: "フープ筋結束中、鉄筋棒でたたいたところ自分の足を叩く", severityBefore: 3, freqBefore: 2, measure: "①非定常作業時、元請・職長と協議し必要な措置をとる。\n②溶接方法を変更する。", severityAfter: 3, freqAfter: 2 },
+  { name: "高架橋配筋工", task: "主筋圧接作業", hazard: "立馬から降りる際、腰道具が引っ掛かり立馬とともに転倒", severityBefore: 3, freqBefore: 3, measure: "①長い工具を身に着けて昇降しない。\n②服装のチェックを行う。", severityAfter: 3, freqAfter: 1 },
+  { name: "高架橋躯体工", task: "足場解体作業", hazard: "枠組足場大ばらし中、部材が破断し横振れして作業員が転落", severityBefore: 4, freqBefore: 2, measure: "①安全帯の確実な使用。\n②手すり先行足場の使用。\n③現場状況に応じた大ばらし規模の設定。", severityAfter: 4, freqAfter: 1 },
+  { name: "高架橋躯体工", task: "足場・支保工解体", hazard: "部材解体搬入作業中に腰を痛める", severityBefore: 3, freqBefore: 2, measure: "①無理な姿勢で作業をしない。\n②腰に異常を感じたら申し出る。", severityAfter: 3, freqAfter: 1 },
+  { name: "コンクリート工", task: "柱コンクリート打設", hazard: "ロープで引き上げる際滑ってバイブレーターが落下", severityBefore: 3, freqBefore: 2, measure: "①吊荷の下に入らない。\n②滑りにくいロープでしっかり結ぶ。", severityAfter: 3, freqAfter: 1 },
+  { name: "コンクリート工", task: "ベースコンクリート打設", hazard: "ポンプ車のホースが詰まり破裂、生コンが作業員に飛散", severityBefore: 3, freqBefore: 2, measure: "①ホース・ブーム直下への立入禁止徹底。\n②ホースをサニーホース等で養生。", severityAfter: 3, freqAfter: 1 },
+  { name: "仮締切工", task: "大型土のう設置", hazard: "クレーン吊り込み時、誘導不良により作業員に衝突", severityBefore: 3, freqBefore: 2, measure: "①見える位置にクレーンをセットし事前確認。\n②誘導員を配置する。", severityAfter: 3, freqAfter: 1 },
+  { name: "仮締切工", task: "コンクリートポンプ車作業", hazard: "施工箇所が狭く移動時にホースが当たり作業員が転落", severityBefore: 3, freqBefore: 2, measure: "①安全帯を必ず使用し合図を確実に行う。", severityAfter: 3, freqAfter: 1 },
+  { name: "仮締切工", task: "鋼矢板打設・引抜き", hazard: "地盤悪化によりバランスを崩し転倒、鋼矢板に挟まれる", severityBefore: 3, freqBefore: 2, measure: "①シャックルを使って吊り込む。\n②誘導員の配置。\n③地盤状態の事前に確認。", severityAfter: 3, freqAfter: 1 },
+  { name: "コンクリート工", task: "型枠支保工建込", hazard: "型枠材の建込時、吊荷が落ちて作業員に激突", severityBefore: 3, freqBefore: 2, measure: "①吊荷確認の徹底と介錯ロープの使用。\n②高所作業時の安全作業床設置。", severityAfter: 3, freqAfter: 1 },
+  { name: "コンクリート工", task: "鉄筋搬入・結束", hazard: "鉄筋搬入時、足場と鉄筋との間に作業員が挟まれる", severityBefore: 3, freqBefore: 2, measure: "①誘導員の配置。\n②長尺物は二人以上で運搬する。", severityAfter: 3, freqAfter: 1 },
+  { name: "コンクリート工", task: "鉄筋結束作業", hazard: "鉄筋結束時に足元を滑らせて高所から転落", severityBefore: 4, freqBefore: 3, measure: "①必ず安全帯を使用する。\n②足元の状態を確認してから作業する。", severityAfter: 4, freqAfter: 1 },
+  { name: "コンクリート工", task: "生コン人力打設(ホッパー)", hazard: "ホッパー使用時、吊荷が振れて作業員が転落", severityBefore: 4, freqBefore: 2, measure: "①安全帯の使用と確実な合図。\n②防護網の設置。", severityAfter: 4, freqAfter: 1 },
+  { name: "築堤工", task: "盛土工(ローラー運転)", hazard: "タイヤローラー・振動ローラーが法肩から転落し下敷き", severityBefore: 4, freqBefore: 2, measure: "①配置計画の周知。\n②路肩の事前点検。\n③作業半径内立入禁止。", severityAfter: 4, freqAfter: 1 },
+  { name: "築堤工", task: "植生工(法面作業)", hazard: "急勾配法面での作業中、作業員が転倒・滑落", severityBefore: 3, freqBefore: 2, measure: "①勾配が急な箇所では親綱と安全帯を使用する。\n②足元を確認する。", severityAfter: 3, freqAfter: 1 },
+  { name: "築堤工", task: "残土処理工(土砂積込)", hazard: "土砂積込時、作業員がダンプトラックに巻き込まれる", severityBefore: 4, freqBefore: 2, measure: "①ダンプトラック誘導員を配備し指示に従う。", severityAfter: 4, freqAfter: 1 },
+  { name: "築堤工", task: "現場内車両走行", hazard: "現場内及びダンプ搬出路での交通事故", severityBefore: 3, freqBefore: 3, measure: "①ハザードマップを使って順路を明確化。\n②ゆとりのある運転を心がける。", severityAfter: 3, freqAfter: 2 },
+  { name: "掘削工", task: "オープンカット掘削", hazard: "掘削箇所の地盤軟弱により掘削法面が突然崩壊", severityBefore: 3, freqBefore: 2, measure: "①作業開始前の地山点検。\n②バックホウ足元への鉄板敷設。\n③法肩へ安全ロープ設置。", severityAfter: 3, freqAfter: 1 },
+  { name: "掘削工", task: "片切り掘削", hazard: "切土法面から湧水が出水し法面が崩壊", severityBefore: 3, freqBefore: 3, measure: "①湧水・亀裂の事前点検。\n②丁張を確認し安全勾配で掘削する。", severityAfter: 3, freqAfter: 1 },
+  { name: "仮設足場工", task: "足場材料運搬", hazard: "作業通路上に置いてある資材につまづいて転倒", severityBefore: 3, freqBefore: 3, measure: "①常に作業通路の整理整頓を周知徹底する。", severityAfter: 3, freqAfter: 2 },
+  { name: "仮設足場工", task: "クレーン材料吊り込み", hazard: "吊荷が組立中の足場に激突し足場全体が崩壊", severityBefore: 4, freqBefore: 2, measure: "①介錯ロープを使用する。\n②玉掛作業手順を再確認する。", severityAfter: 4, freqAfter: 1 },
+  { name: "仮設足場工", task: "足場組立作業", hazard: "高所作業床からの作業員の墜落", severityBefore: 4, freqBefore: 2, measure: "①安全帯を絶対使用する。\n②作業床の墜落防止措置を徹底する。", severityAfter: 4, freqAfter: 1 },
+  { name: "仮設足場工", task: "足場材料荷下ろし・解体", hazard: "解体中に部材が落下し下の作業員に直撃", severityBefore: 3, freqBefore: 2, measure: "①幅木・メッシュシート・防網を設置する。\n②腰道具の落下防止。", severityAfter: 3, freqAfter: 1 },
+  { name: "準備工", task: "作業場所への入場", hazard: "暗がりや未養生の掘削開口部へ転落", severityBefore: 4, freqBefore: 2, measure: "①開口部養生、手すり等の設置。", severityAfter: 4, freqAfter: 1 },
+  { name: "掘削工", task: "重機搬入・荷下ろし", hazard: "重機転倒により誘導員・作業員が挟まれる", severityBefore: 4, freqBefore: 3, measure: "①重機周りの立入禁止措置。\n②見やすい位置での誘導実施。", severityAfter: 4, freqAfter: 1 },
+  { name: "掘削工", task: "重機掘削作業", hazard: "旋回・後退時に重機が作業員や誘導員と接触", severityBefore: 3, freqBefore: 3, measure: "①作業員数の把握と周囲の確認。\n②合図の徹底。\n③立入禁止の徹底。", severityAfter: 3, freqAfter: 2 },
+  { name: "掘削工", task: "地下埋設物近接掘削", hazard: "地下埋設構造物やケーブルをバケットで損傷", severityBefore: 3, freqBefore: 2, measure: "①試掘の実施。\n②付近の手掘り掘削。\n③誘導員の配置。", severityAfter: 3, freqAfter: 1 },
+  { name: "足場工", task: "クレーン揚重作業", hazard: "アウトリガー不備やオーバーロードによるクレーン転倒", severityBefore: 4, freqBefore: 2, measure: "①定格荷重の厳守。\n②アウトリガー完全張り出しと敷鉄板設置。", severityAfter: 4, freqAfter: 1 },
+  { name: "溶接工", task: "アーク溶接作業", hazard: "溶接機や配線の破損による作業員の感電", severityBefore: 3, freqBefore: 2, measure: "①アース線の適切な設置。\n②始業前点検の徹底。", severityAfter: 3, freqAfter: 1 },
+  { name: "地盤改良工", task: "改良材の散布・攪拌", hazard: "強風等により粉状の改良材が飛散し目や皮膚に付着", severityBefore: 3, freqBefore: 2, measure: "①防じんマスク、保護メガネの着用。", severityAfter: 3, freqAfter: 1 },
+  { name: "U型側溝布設工", task: "側溝据付作業", hazard: "吊り上げたU字溝が振れて足の上に落下", severityBefore: 3, freqBefore: 2, measure: "①吊荷の下に手足を出さない。\n②オペレータとの合図確認。", severityAfter: 3, freqAfter: 1 },
+  { name: "解体工", task: "破砕機による取壊し", hazard: "破砕機の旋回範囲内で作業しバケットに接触", severityBefore: 4, freqBefore: 2, measure: "①作業半径内立入禁止措置。\n②見張員の配置。", severityAfter: 4, freqAfter: 1 },
+  { name: "解体工", task: "壁体取壊し作業", hazard: "取壊し中の壁体が意図しない方向(手前)に倒壊", severityBefore: 3, freqBefore: 2, measure: "①取壊し作業手順書の作成。\n②立入禁止措置の徹底。", severityAfter: 3, freqAfter: 1 },
+  { name: "解体工", task: "石綿含有壁の解体", hazard: "石綿(アスベスト)飛散による健康障害", severityBefore: 4, freqBefore: 2, measure: "①事前調査の記録。\n②石綿作業主任者の配置。\n③石綿障害予防規則の順守。", severityAfter: 4, freqAfter: 1 },
+  { name: "ブロックマット工", task: "掘削・盛土作業", hazard: "バックホウ旋回範囲内での接触およびローラー轢かれ", severityBefore: 4, freqBefore: 2, measure: "①立入禁止措置。\n②見張員の配置。", severityAfter: 4, freqAfter: 1 },
+  { name: "木柵工", task: "杉杭打ち込み作業", hazard: "杭打ち込み時、バックホウバケットが滑り手元作業員に打撃", severityBefore: 3, freqBefore: 2, measure: "①杭セット後、作業員は杭から離れる。\n②正しい位置へ打ち込む。", severityAfter: 3, freqAfter: 1 },
+  { name: "推進工", task: "立坑設備設置", hazard: "反力板荷下ろし時クレーン転倒および吊荷落下", severityBefore: 4, freqBefore: 2, measure: "①地盤補強とアウトリガー完全張り出し。\n②立入禁止徹底。", severityAfter: 4, freqAfter: 1 },
+  { name: "推進工", task: "坑内推進作業", hazard: "立坑・坑内での酸素欠乏・有毒ガス中毒", severityBefore: 3, freqBefore: 2, measure: "①酸欠作業主任者の配置。\n②ガス濃度の測定と強制換気の実施。", severityAfter: 3, freqAfter: 1 },
+  { name: "舗装工", task: "アスファルト敷均し", hazard: "アスファルトフィニッシャと合材ダンプの間に挟まれる", severityBefore: 4, freqBefore: 2, measure: "①作業区域内立入禁止措置。\n②見張員の配置。", severityAfter: 4, freqAfter: 1 },
+  { name: "舗装工", task: "人力不陸整正・舗装", hazard: "猛暑下の舗装作業による作業員の熱中症", severityBefore: 3, freqBefore: 2, measure: "①適時水分補給と休憩。\n②体調不良時の早期申し出。", severityAfter: 3, freqAfter: 2 },
+  { name: "建築工事", task: "根切り掘削", hazard: "重機足場の崩壊によるバックホウ転倒", severityBefore: 4, freqBefore: 2, measure: "①足場点検。\n②法肩に近寄らない。\n③乗り入れ構台の設置。", severityAfter: 4, freqAfter: 1 },
+  { name: "建築工事", task: "軽鉄天井・壁下地", hazard: "脚立作業中のバランス喪失による転倒・墜落", severityBefore: 3, freqBefore: 2, measure: "①脚立の安定確認。\n②周囲に資材を置かない。\n③身を乗り出さない。", severityAfter: 3, freqAfter: 1 },
+  { name: "事務所作業", task: "OA機器・配線管理", hazard: "タコ足配線からの発火・火災発生", severityBefore: 3, freqBefore: 2, measure: "①コンセントの点検とタコ足配線の禁止。", severityAfter: 3, freqAfter: 1 },
+  { name: "資材置き場", task: "資材整理・積込", hazard: "資材片付け作業中、出入り車両に挟まれる", severityBefore: 3, freqBefore: 2, measure: "①片付け範囲の明示。\n②運転手と作業員の相互確認。", severityAfter: 3, freqAfter: 1 },
+  { name: "メンタルヘルス", task: "協議・工程管理", hazard: "発注者との意見不一致や工程遅れによる強いストレス", severityBefore: 3, freqBefore: 2, measure: "①密なコミュニケーション。\n②部門長への早期相談と支援要請。", severityAfter: 3, freqAfter: 1 },
+  { name: "メンタルヘルス", task: "職場環境", hazard: "長時間労働や人間関係の悩みによる過労・疾患", severityBefore: 3, freqBefore: 2, measure: "①定期的な休暇取得。\n②相談窓口や産業医の活用。", severityAfter: 3, freqAfter: 1 }
+];
+
+let savedPreset = JSON.parse(localStorage.getItem("customPresetMaster"));
+if (!savedPreset || !Array.isArray(savedPreset)) {
+  savedPreset = defaultPresetData.filter(dp =>
+    !deletedMasters.presets.some(del => del.task === dp.task && del.hazard === dp.hazard)
+  );
+  localStorage.setItem("customPresetMaster", JSON.stringify(savedPreset));
+}
+let fullPresetData = savedPreset;
+
+let siteMaster = JSON.parse(localStorage.getItem("siteMaster")) || ["市道川副中央幹線4号函渠設置工事", "Bビル 新築工事", "C河川 護岸工事"];
+let companyMaster = JSON.parse(localStorage.getItem("companyMaster")) || ["株式会社富士道路", "富士工務店株式会社", "富士道路株式会社"];
+
+function getCurrentMastersPayload() {
+  const cleanSites = siteMaster.filter(s => !deletedMasters.sites.includes(s));
+  const cleanCompanies = companyMaster.filter(c => !deletedMasters.companies.includes(c));
+  const cleanMachinery = machineryMaster.filter(m => !deletedMasters.machinery.includes(m));
+  const cleanPresets = fullPresetData.filter(fp =>
+    !deletedMasters.presets.some(dp => dp.task === fp.task && dp.hazard === fp.hazard)
+  );
+  return {
+    siteMaster: cleanSites,
+    companyMaster: cleanCompanies,
+    machineryMaster: cleanMachinery,
+    customPresetMaster: cleanPresets,
+    deletedMasters: deletedMasters,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function applyMastersFromDrive(mastersObj) {
+  if (!mastersObj || typeof mastersObj !== "object") return;
+
+  if (mastersObj.deletedMasters) {
+    if (Array.isArray(mastersObj.deletedMasters.sites)) {
+      mastersObj.deletedMasters.sites.forEach(s => {
+        if (!deletedMasters.sites.includes(s)) deletedMasters.sites.push(s);
+      });
+    }
+    if (Array.isArray(mastersObj.deletedMasters.companies)) {
+      mastersObj.deletedMasters.companies.forEach(c => {
+        if (!deletedMasters.companies.includes(c)) deletedMasters.companies.push(c);
+      });
+    }
+    if (Array.isArray(mastersObj.deletedMasters.machinery)) {
+      mastersObj.deletedMasters.machinery.forEach(m => {
+        if (!deletedMasters.machinery.includes(m)) deletedMasters.machinery.push(m);
+      });
+    }
+    if (Array.isArray(mastersObj.deletedMasters.presets)) {
+      mastersObj.deletedMasters.presets.forEach(p => {
+        if (!deletedMasters.presets.some(dp => dp.task === p.task && dp.hazard === p.hazard)) {
+          deletedMasters.presets.push(p);
+        }
+      });
+    }
+    saveDeletedMasters();
+  }
+
+  if (Array.isArray(mastersObj.siteMaster)) {
+    mastersObj.siteMaster.forEach(s => {
+      if (s && !deletedMasters.sites.includes(s) && !siteMaster.includes(s)) {
+        siteMaster.push(s);
+      }
+    });
+    siteMaster = siteMaster.filter(s => !deletedMasters.sites.includes(s));
+    localStorage.setItem("siteMaster", JSON.stringify(siteMaster));
+  }
+
+  if (Array.isArray(mastersObj.companyMaster)) {
+    mastersObj.companyMaster.forEach(c => {
+      if (c && !deletedMasters.companies.includes(c) && !companyMaster.includes(c)) {
+        companyMaster.push(c);
+      }
+    });
+    companyMaster = companyMaster.filter(c => !deletedMasters.companies.includes(c));
+    localStorage.setItem("companyMaster", JSON.stringify(companyMaster));
+  }
+
+  if (Array.isArray(mastersObj.machineryMaster)) {
+    mastersObj.machineryMaster.forEach(m => {
+      if (m && !deletedMasters.machinery.includes(m) && !machineryMaster.includes(m)) {
+        machineryMaster.push(m);
+      }
+    });
+    machineryMaster = machineryMaster.filter(m => !deletedMasters.machinery.includes(m));
+    localStorage.setItem("machineryMaster", JSON.stringify(machineryMaster));
+  }
+
+  if (Array.isArray(mastersObj.customPresetMaster)) {
+    mastersObj.customPresetMaster.forEach(p => {
+      if (!p || !p.task || !p.hazard) return;
+      const isDeleted = deletedMasters.presets.some(dp => dp.task === p.task && dp.hazard === p.hazard);
+      if (isDeleted) return;
+
+      const existingIdx = fullPresetData.findIndex(fp => fp.task === p.task && fp.hazard === p.hazard);
+      if (existingIdx >= 0) {
+        fullPresetData[existingIdx] = { ...fullPresetData[existingIdx], ...p };
+      } else {
+        fullPresetData.push(p);
+      }
+    });
+    fullPresetData = fullPresetData.filter(fp =>
+      !deletedMasters.presets.some(dp => dp.task === fp.task && dp.hazard === fp.hazard)
+    );
+    localStorage.setItem("customPresetMaster", JSON.stringify(fullPresetData));
+  }
+}
+
+window.addEventListener("load", async () => {
+  await initDB();
+  renderMasterDropdowns();
+  renderMachineryDropdown();
+  initWorkerSigns();
+  initCanvasEvents();
+  updatePendingBadge();
+  await loadDraft();
+  if (!document.getElementById("kyDate").value) {
+    document.getElementById("kyDate").value = new Date().toISOString().split('T')[0];
+  }
+  setupNetworkMonitoring();
+
+  // 起動時にオンラインかつURL設定済みであれば自動双方向同期を実行
+  if (navigator.onLine && localStorage.getItem("gasWebAppUrl")) {
+    await autoFullSync(false);
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  commitPendingDeletionsSync();
+  saveDraftSync();
+});
+window.addEventListener("pagehide", () => {
+  commitPendingDeletionsSync();
+  saveDraftSync();
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    commitPendingDeletionsSync();
+    saveDraftSync();
+  } else if (document.visibilityState === "visible") {
+    // アプリがフォアグラウンドに復帰した際、オンラインなら未送信分を自動同期
+    if (navigator.onLine && localStorage.getItem("gasWebAppUrl") && hasPendingSync()) {
+      autoFullSync(false);
+    }
+  }
+});
+
+function initDB() {
+  return new Promise((resolve) => {
+    const req = indexedDB.open("KY_App_DB_v31", 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (db.objectStoreNames.contains("ky_reports")) db.deleteObjectStore("ky_reports");
+      db.createObjectStore("ky_reports", { keyPath: "key" });
+    };
+    req.onsuccess = (e) => { db = e.target.result; resolve(); };
+  });
+}
+
+function setupNetworkMonitoring() {
+  const indicator = document.getElementById("networkIndicator");
+  const syncStatus = document.getElementById("syncStatus");
+
+  const handleOnline = async () => {
+    indicator.className = "status-indicator status-online";
+    if (localStorage.getItem("gasWebAppUrl")) {
+      syncStatus.textContent = "Wi-Fi/通信復帰を検知 — Googleドライブへ自動同期中...";
+      await autoFullSync(false);
+    } else {
+      syncStatus.textContent = "オンライン (同期設定でURLを設定すると自動共有されます)";
+    }
+  };
+
+  const handleOffline = () => {
+    indicator.className = "status-indicator status-offline";
+    syncStatus.textContent = "オフライン稼働中 (端末内に安全保存 — 通信復帰で自動同期)";
+  };
+
+  window.addEventListener("online", handleOnline);
+  window.addEventListener("offline", handleOffline);
+
+  if (navigator.onLine) {
+    indicator.className = "status-indicator status-online";
+  } else {
+    handleOffline();
+  }
+}
+
+// 双方向自動同期（未送信データのアップロード ＋ Googleドライブの最新データ取得）
+async function autoFullSync(showAlert = false) {
+  const gasUrl = localStorage.getItem("gasWebAppUrl");
+  if (!gasUrl || isSyncingNow) return;
+
+  if (!navigator.onLine) {
+    if (showAlert) alert("現在オフラインです。Wi-Fiやモバイル通信に接続されると自動的にGoogleドライブへ同期されます。");
+    return;
+  }
+
+  isSyncingNow = true;
+  const syncStatus = document.getElementById("syncStatus");
+  const indicator = document.getElementById("networkIndicator");
+  syncStatus.textContent = "Googleドライブと双方向同期中...";
+  indicator.className = "status-indicator status-syncing";
+
+  try {
+    // 1. ローカルに未送信データがある場合は先にGoogleドライブへアップロード
+    if (hasPendingSync()) {
+      await syncToGoogleDrive(false);
+    }
+    // 2. Googleドライブ上の最新報告書・マスタを取得して端末内へ反映
+    await fetchReportsFromDrive(showAlert);
+
+    syncStatus.textContent = "Googleドライブと同期完了 (" + new Date().toLocaleTimeString() + ")";
+    indicator.className = "status-indicator status-online";
+  } catch (err) {
+    console.error("Auto Full Sync Error:", err);
+    syncStatus.textContent = "自動同期待機中 (通信状態を確認してください)";
+    indicator.className = navigator.onLine ? "status-indicator status-online" : "status-indicator status-offline";
+  } finally {
+    isSyncingNow = false;
+  }
+}
+
+function renderMasterDropdowns() {
+  const siteSel = document.getElementById("siteSelect");
+  const compSel = document.getElementById("companySelect");
+  const prevSite = siteSel.value;
+  const prevComp = compSel.value;
+
+  siteSel.innerHTML = '<option value="">-- 選択してください --</option>' + siteMaster.map(s => `<option value="${s}">${s}</option>`).join('');
+  compSel.innerHTML = '<option value="">-- 選択してください --</option>' + companyMaster.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  if (prevSite && siteMaster.includes(prevSite)) siteSel.value = prevSite;
+  if (prevComp && companyMaster.includes(prevComp)) compSel.value = prevComp;
+}
+
+function renderMachineryDropdown() {
+  const sel = document.getElementById("machinerySelectDropdown");
+  let html = '<option value="">+ マスタから機械を追加選択</option>';
+  machineryMaster.forEach(m => { html += `<option value="${m}">${m}</option>`; });
+  sel.innerHTML = html;
+}
+
+function appendSelectedMachinery(selectElem) {
+  const val = selectElem.value;
+  if (!val) return;
+  const ta = document.getElementById("todayMachineryContent");
+  const current = ta.value.trim();
+  ta.value = current ? (current.includes(val) ? current : current + "、" + val) : val;
+  selectElem.value = "";
+  handleInputChange();
+}
+
+function openMachineryMasterModal() {
+  renderMachineryMasterList();
+  document.getElementById("machineryMasterModal").style.display = "flex";
+}
+function closeMachineryMasterModal() {
+  document.getElementById("machineryMasterModal").style.display = "none";
+  renderMachineryDropdown();
+}
+function renderMachineryMasterList() {
+  const list = document.getElementById("machineryMasterList");
+  list.innerHTML = machineryMaster.map((m, idx) => `
+    <li style="display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px solid #eee; font-size:0.75em;">
+      <span>🚜 ${m}</span>
+      <div style="display:flex; gap:4px;">
+        <button class="btn btn-primary" style="font-size:0.6em; padding:1px 4px;" onclick="editMachineryMasterItem(${idx})">修正</button>
+        <button class="btn btn-danger" style="font-size:0.6em; padding:1px 4px;" onclick="deleteMachineryMasterItem(${idx})">削除</button>
+      </div>
+    </li>`).join('');
+}
+function addMachineryMasterItem() {
+  const input = document.getElementById("newMachineryInput");
+  const val = input.value.trim();
+  if (val && !machineryMaster.includes(val)) {
+    machineryMaster.push(val);
+    deletedMasters.machinery = deletedMasters.machinery.filter(m => m !== val);
+    saveDeletedMasters();
+    localStorage.setItem("machineryMaster", JSON.stringify(machineryMaster));
+    input.value = "";
+    renderMachineryMasterList();
+    renderMachineryDropdown();
+    handleInputChange();
+  }
+}
+function editMachineryMasterItem(idx) {
+  const current = machineryMaster[idx];
+  const newVal = prompt("使用機械名を修正してください:", current);
+  if (newVal !== null && newVal.trim() !== "") {
+    const trimmed = newVal.trim();
+    if (trimmed !== current && !deletedMasters.machinery.includes(current)) {
+      deletedMasters.machinery.push(current);
+    }
+    deletedMasters.machinery = deletedMasters.machinery.filter(m => m !== trimmed);
+    saveDeletedMasters();
+    machineryMaster[idx] = trimmed;
+    localStorage.setItem("machineryMaster", JSON.stringify(machineryMaster));
+    renderMachineryMasterList();
+    renderMachineryDropdown();
+    handleInputChange();
+  }
+}
+function deleteMachineryMasterItem(idx) {
+  if (confirm("この使用機械マスタを削除しますか？")) {
+    const removed = machineryMaster.splice(idx, 1)[0];
+    if (removed && !deletedMasters.machinery.includes(removed)) {
+      deletedMasters.machinery.push(removed);
+      saveDeletedMasters();
+    }
+    localStorage.setItem("machineryMaster", JSON.stringify(machineryMaster));
+    renderMachineryMasterList();
+    renderMachineryDropdown();
+    handleInputChange();
+  }
+}
+
+function openMasterModal() { renderMasterLists(); document.getElementById("masterModal").style.display = "flex"; }
+function closeMasterModal() { document.getElementById("masterModal").style.display = "none"; renderMasterDropdowns(); }
+function renderMasterLists() {
+  document.getElementById("siteMasterList").innerHTML = siteMaster.map((s, i) => `
+    <li style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; font-size:0.78em;">
+      <span>🏗 ${s}</span>
+      <div style="display:flex; gap:4px;">
+        <button class="btn btn-primary" style="font-size:0.65em; padding:1px 5px;" onclick="editSiteMaster(${i})">修正</button>
+        <button class="btn btn-danger" style="font-size:0.65em; padding:1px 5px;" onclick="deleteSiteMaster(${i})">削除</button>
+      </div>
+    </li>`).join('');
+
+  document.getElementById("companyMasterList").innerHTML = companyMaster.map((c, i) => `
+    <li style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; font-size:0.78em;">
+      <span>🏢 ${c}</span>
+      <div style="display:flex; gap:4px;">
+        <button class="btn btn-primary" style="font-size:0.65em; padding:1px 5px;" onclick="editCompanyMaster(${i})">修正</button>
+        <button class="btn btn-danger" style="font-size:0.65em; padding:1px 5px;" onclick="deleteCompanyMaster(${i})">削除</button>
+      </div>
+    </li>`).join('');
+}
+
+function addSiteMaster() {
+  const val = document.getElementById("newSiteInput").value.trim();
+  if (val && !siteMaster.includes(val)) {
+    siteMaster.push(val);
+    deletedMasters.sites = deletedMasters.sites.filter(s => s !== val);
+    saveDeletedMasters();
+    localStorage.setItem("siteMaster", JSON.stringify(siteMaster));
+    document.getElementById("newSiteInput").value = "";
+    renderMasterLists();
+    renderMasterDropdowns();
+    handleInputChange();
+  }
+}
+function editSiteMaster(i) {
+  const current = siteMaster[i];
+  const newVal = prompt("現場名を修正してください:", current);
+  if (newVal !== null && newVal.trim() !== "") {
+    const trimmed = newVal.trim();
+    if (trimmed !== current && !deletedMasters.sites.includes(current)) {
+      deletedMasters.sites.push(current);
+    }
+    deletedMasters.sites = deletedMasters.sites.filter(s => s !== trimmed);
+    saveDeletedMasters();
+    siteMaster[i] = trimmed;
+    localStorage.setItem("siteMaster", JSON.stringify(siteMaster));
+    renderMasterLists();
+    renderMasterDropdowns();
+    handleInputChange();
+  }
+}
+function deleteSiteMaster(i) {
+  if (confirm("この現場名を削除しますか？")) {
+    const removed = siteMaster.splice(i, 1)[0];
+    if (removed && !deletedMasters.sites.includes(removed)) {
+      deletedMasters.sites.push(removed);
+      saveDeletedMasters();
+    }
+    localStorage.setItem("siteMaster", JSON.stringify(siteMaster));
+    renderMasterLists();
+    renderMasterDropdowns();
+    handleInputChange();
+  }
+}
+
+function addCompanyMaster() {
+  const val = document.getElementById("newCompanyInput").value.trim();
+  if (val && !companyMaster.includes(val)) {
+    companyMaster.push(val);
+    deletedMasters.companies = deletedMasters.companies.filter(c => c !== val);
+    saveDeletedMasters();
+    localStorage.setItem("companyMaster", JSON.stringify(companyMaster));
+    document.getElementById("newCompanyInput").value = "";
+    renderMasterLists();
+    renderMasterDropdowns();
+    handleInputChange();
+  }
+}
+function editCompanyMaster(i) {
+  const current = companyMaster[i];
+  const newVal = prompt("協力会社名を修正してください:", current);
+  if (newVal !== null && newVal.trim() !== "") {
+    const trimmed = newVal.trim();
+    if (trimmed !== current && !deletedMasters.companies.includes(current)) {
+      deletedMasters.companies.push(current);
+    }
+    deletedMasters.companies = deletedMasters.companies.filter(c => c !== trimmed);
+    saveDeletedMasters();
+    companyMaster[i] = trimmed;
+    localStorage.setItem("companyMaster", JSON.stringify(companyMaster));
+    renderMasterLists();
+    renderMasterDropdowns();
+    handleInputChange();
+  }
+}
+function deleteCompanyMaster(i) {
+  if (confirm("この協力会社名を削除しますか？")) {
+    const removed = companyMaster.splice(i, 1)[0];
+    if (removed && !deletedMasters.companies.includes(removed)) {
+      deletedMasters.companies.push(removed);
+      saveDeletedMasters();
+    }
+    localStorage.setItem("companyMaster", JSON.stringify(companyMaster));
+    renderMasterLists();
+    renderMasterDropdowns();
+    handleInputChange();
+  }
+}
+
+function openPresetManageModal() { renderPresetList(); document.getElementById("presetManageModal").style.display = "flex"; }
+function closePresetManageModal() { document.getElementById("presetManageModal").style.display = "none"; updateAllRowSelects(); }
+
+function renderPresetList() {
+  const tbody = document.getElementById("presetListTbody");
+  tbody.innerHTML = "";
+  fullPresetData.forEach((item, index) => {
+    const scoreB = (item.severityBefore || 3) * (item.freqBefore || 3);
+    const scoreA = (item.severityAfter || 3) * (item.freqAfter || 1);
+    tbody.innerHTML += `
+      <tr>
+        <td>${item.name}</td>
+        <td><b>${item.task}</b></td>
+        <td><b>${item.hazard}</b></td>
+        <td><b>${scoreB}</b></td>
+        <td><b>${scoreA}</b></td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-primary" style="font-size:0.6em; padding:1px 4px;" onclick="startEditPresetItem(${index})">修正</button>
+          <button class="btn btn-danger" style="font-size:0.6em; padding:1px 4px;" onclick="deletePresetItem(${index})">削除</button>
+        </td>
+      </tr>`;
+  });
+}
+
+function savePresetMasterItem() {
+  const editIdx = parseInt(document.getElementById("editPresetIndex").value);
+  const name = document.getElementById("mAddName").value.trim();
+  const task = document.getElementById("mAddTask").value.trim();
+  const hazard = document.getElementById("mAddHazard").value.trim();
+  const measure = document.getElementById("mAddMeasure").value.trim();
+  const sevB = parseInt(document.getElementById("mAddSevB").value);
+  const freqB = parseInt(document.getElementById("mAddFreqB").value);
+  const sevA = parseInt(document.getElementById("mAddSevA").value);
+  const freqA = parseInt(document.getElementById("mAddFreqA").value);
+
+  if (!task || !hazard) {
+    alert("作業内容と予測される危険要因を入力してください。");
+    return;
+  }
+
+  const newItem = {
+    name: name || "一般工種",
+    task: task,
+    hazard: hazard,
+    severityBefore: sevB,
+    freqBefore: freqB,
+    measure: measure,
+    severityAfter: sevA,
+    freqAfter: freqA
+  };
+
+  if (editIdx >= 0) {
+    const oldItem = fullPresetData[editIdx];
+    if (oldItem && (oldItem.task !== newItem.task || oldItem.hazard !== newItem.hazard)) {
+      if (!deletedMasters.presets.some(p => p.task === oldItem.task && p.hazard === oldItem.hazard)) {
+        deletedMasters.presets.push({ task: oldItem.task, hazard: oldItem.hazard });
+      }
+    }
+    deletedMasters.presets = deletedMasters.presets.filter(p => !(p.task === newItem.task && p.hazard === newItem.hazard));
+    saveDeletedMasters();
+    fullPresetData[editIdx] = newItem;
+    alert("工程リスクマスタ項目を更新しました！");
+  } else {
+    deletedMasters.presets = deletedMasters.presets.filter(p => !(p.task === newItem.task && p.hazard === newItem.hazard));
+    saveDeletedMasters();
+    fullPresetData.push(newItem);
+    alert("工程リスクマスタに新規項目を追加登録しました！");
+  }
+
+  localStorage.setItem("customPresetMaster", JSON.stringify(fullPresetData));
+  cancelPresetEdit();
+  renderPresetList();
+  updateAllRowSelects();
+  handleInputChange();
+}
+
+function startEditPresetItem(index) {
+  const item = fullPresetData[index];
+  document.getElementById("editPresetIndex").value = index;
+  document.getElementById("mAddName").value = item.name || "";
+  document.getElementById("mAddTask").value = item.task || "";
+  document.getElementById("mAddHazard").value = item.hazard || "";
+  document.getElementById("mAddMeasure").value = item.measure || "";
+  document.getElementById("mAddSevB").value = item.severityBefore || 3;
+  document.getElementById("mAddFreqB").value = item.freqBefore || 3;
+  document.getElementById("mAddSevA").value = item.severityAfter || 3;
+  document.getElementById("mAddFreqA").value = item.freqAfter || 1;
+
+  document.getElementById("presetFormLegend").textContent = `マスタ項目の編集 (No.${index + 1})`;
+  document.getElementById("presetSubmitBtn").textContent = "更新を保存";
+  document.getElementById("presetCancelBtn").style.display = "inline-block";
+}
+
+function cancelPresetEdit() {
+  document.getElementById("editPresetIndex").value = "-1";
+  document.getElementById("mAddName").value = "";
+  document.getElementById("mAddTask").value = "";
+  document.getElementById("mAddHazard").value = "";
+  document.getElementById("mAddMeasure").value = "";
+  document.getElementById("mAddSevB").value = "3";
+  document.getElementById("mAddFreqB").value = "3";
+  document.getElementById("mAddSevA").value = "3";
+  document.getElementById("mAddFreqA").value = "1";
+
+  document.getElementById("presetFormLegend").textContent = "新規マスタ項目の個別追加登録";
+  document.getElementById("presetSubmitBtn").textContent = "個別マスタへ新規登録";
+  document.getElementById("presetCancelBtn").style.display = "none";
+}
+
+function deletePresetItem(index) {
+  if (confirm("このマスタ項目を削除しますか？")) {
+    const removed = fullPresetData.splice(index, 1)[0];
+    if (removed && !deletedMasters.presets.some(p => p.task === removed.task && p.hazard === removed.hazard)) {
+      deletedMasters.presets.push({ task: removed.task, hazard: removed.hazard });
+      saveDeletedMasters();
+    }
+    localStorage.setItem("customPresetMaster", JSON.stringify(fullPresetData));
+    renderPresetList();
+    updateAllRowSelects();
+    handleInputChange();
+  }
+}
+
+function registerRowToMaster(btn) {
+  const tr = btn.closest("tr");
+  const task = tr.querySelector(".r-task").value.trim();
+  const hazard = tr.querySelector(".r-hazard").value.trim();
+  const measure = tr.querySelector(".r-measure").value.trim();
+  const sevB = parseInt(tr.querySelector(".r-sev-b").value);
+  const freqB = parseInt(tr.querySelector(".r-freq-b").value);
+  const sevA = parseInt(tr.querySelector(".r-sev-a").value);
+  const freqA = parseInt(tr.querySelector(".r-freq-a").value);
+
+  if (!task || !hazard) {
+    alert("「作業名/内容」と「予測される危険要因」を入力してください。");
+    return;
+  }
+
+  deletedMasters.presets = deletedMasters.presets.filter(p => !(p.task === task && p.hazard === hazard));
+  saveDeletedMasters();
+
+  fullPresetData.push({
+    name: "現場手入力工種",
+    task: task,
+    hazard: hazard,
+    severityBefore: sevB,
+    freqBefore: freqB,
+    measure: measure,
+    severityAfter: sevA,
+    freqAfter: freqA
+  });
+
+  localStorage.setItem("customPresetMaster", JSON.stringify(fullPresetData));
+  updateAllRowSelects();
+  handleInputChange();
+  alert("この行のデータを工程リスクアセスメントマスタに新規登録しました！");
+}
+
+function initWorkerSigns() {
+  const container = document.getElementById("workerSignGrid");
+  container.innerHTML = "";
+  for (let i = 1; i <= 10; i++) {
+    container.innerHTML += `
+      <div class="sign-card">
+        <div>作業員 ${i}</div>
+        <img id="img_sign_worker_${i}" class="sign-preview" alt="未署名">
+        <button class="btn btn-secondary no-print" style="font-size:0.55em; margin-top:1px;" onclick="openSignatureModal('worker_${i}', '作業員${i} 署名')">署名</button>
+      </div>`;
+  }
+}
+
+function getRowPresetOptionsHTML() {
+  let html = '<option value="">-- 全マスタから作業・危険要因を選択 --</option>';
+  fullPresetData.forEach((item, index) => {
+    html += `<option value="${index}">【${item.task}】 ➡ 危険: ${item.hazard}</option>`;
+  });
+  return html;
+}
+
+function updateAllRowSelects() {
+  document.querySelectorAll(".row-preset-select").forEach(sel => {
+    const currentVal = sel.value;
+    sel.innerHTML = getRowPresetOptionsHTML();
+    sel.value = currentVal;
+  });
+}
+
+function applyRowPreset(selectElem) {
+  const idx = selectElem.value;
+  if (idx === "") return;
+  const item = fullPresetData[parseInt(idx)];
+  const tr = selectElem.closest("tr");
+  
+  tr.querySelector(".r-task").value = item.task;
+  tr.querySelector(".r-hazard").value = item.hazard;
+  tr.querySelector(".r-sev-b").value = item.severityBefore;
+  tr.querySelector(".r-freq-b").value = item.freqBefore;
+  tr.querySelector(".r-measure").value = item.measure;
+  tr.querySelector(".r-sev-a").value = item.severityAfter;
+  tr.querySelector(".r-freq-a").value = item.freqAfter;
+  
+  tr.querySelectorAll('textarea.r-auto-expand').forEach(ta => autoResizeTextarea(ta));
+  syncPrintMirrors();
+  updateCalculations();
+  selectElem.value = "";
+}
+
+function autoResizeTextarea(elem) {
+  elem.style.height = '0.8cm';
+  if (elem.scrollHeight > elem.clientHeight) { elem.style.height = elem.scrollHeight + 'px'; }
+}
+
+function addRiskRow(data = null) {
+  const tbody = document.getElementById("riskTbody");
+  const tr = document.createElement("tr");
+
+  const task = data ? (data.task || data.作業名 || "") : "";
+  const hazard = data ? (data.hazard || data.危険要因 || "") : "";
+  const sevB = data ? (data.severityBefore || data.重篤前 || 3) : 3;
+  const freqB = data ? (data.freqBefore || data.可能性前 || 3) : 3;
+  const measure = data ? (data.measure || data.安全対策 || "") : "";
+  const sevA = data ? (data.severityAfter || data.重篤後 || 3) : 3;
+  const freqA = data ? (data.freqAfter || data.可能性後 || 1) : 1;
+
+  tr.innerHTML = `
+    <td>
+      <select class="row-preset-select no-print" style="font-size:0.62em; margin-bottom:1px; background:#f8fafc;" onchange="applyRowPreset(this)">
+        ${getRowPresetOptionsHTML()}
+      </select>
+      <textarea class="r-task r-auto-expand" placeholder="作業名" oninput="autoResizeTextarea(this); syncPrintMirrors(); updateCalculations();">${task}</textarea>
+    </td>
+    <td>
+      <textarea class="r-hazard r-auto-expand" placeholder="危険要因" oninput="autoResizeTextarea(this); syncPrintMirrors(); updateCalculations();">${hazard}</textarea>
+      <div class="r-hazard-print print-text-display"></div>
+    </td>
+    <td><select class="r-sev-b" onchange="updateCalculations()"><option value="4" ${sevB==4?'selected':''}>4</option><option value="3" ${sevB==3?'selected':''}>3</option><option value="2" ${sevB==2?'selected':''}>2</option><option value="1" ${sevB==1?'selected':''}>1</option></select></td>
+    <td><select class="r-freq-b" onchange="updateCalculations()"><option value="4" ${freqB==4?'selected':''}>4</option><option value="3" ${freqB==3?'selected':''}>3</option><option value="2" ${freqB==2?'selected':''}>2</option><option value="1" ${freqB==1?'selected':''}>1</option></select></td>
+    <td><span class="score-before score-badge">0</span></td>
+    <td>
+      <textarea class="r-measure r-auto-expand" placeholder="安全対策" oninput="autoResizeTextarea(this); syncPrintMirrors(); updateCalculations();">${measure}</textarea>
+      <div class="r-measure-print print-text-display"></div>
+    </td>
+    <td><select class="r-sev-a" onchange="updateCalculations()"><option value="4" ${sevA==4?'selected':''}>4</option><option value="3" ${sevA==3?'selected':''}>3</option><option value="2" ${sevA==2?'selected':''}>2</option><option value="1" ${sevA==1?'selected':''}>1</option></select></td>
+    <td><select class="r-freq-a" onchange="updateCalculations()"><option value="4" ${freqA==4?'selected':''}>4</option><option value="3" ${freqA==3?'selected':''}>3</option><option value="2" ${freqA==2?'selected':''}>2</option><option value="1" ${freqA==1?'selected':''}>1</option></select></td>
+    <td><span class="score-after score-badge">0</span></td>
+    <td class="no-print" style="white-space:nowrap;">
+      <button class="btn btn-success" style="font-size:0.55em; padding:2px 3px; margin-bottom:1px; display:block; width:100%;" onclick="registerRowToMaster(this)" title="マスタに新規登録">マスタ登録</button>
+      <button class="btn btn-danger" style="font-size:0.55em; padding:2px 3px; display:block; width:100%;" onclick="deleteRiskRow(this)">削除</button>
+    </td>
+  `;
+  tbody.appendChild(tr);
+  tr.querySelectorAll('textarea.r-auto-expand').forEach(ta => autoResizeTextarea(ta));
+  syncPrintMirrors();
+  updateCalculations();
+}
+
+function deleteRiskRow(btn) { btn.closest("tr").remove(); updateCalculations(); }
+
+function updateCalculations() {
+  const rows = document.querySelectorAll("#riskTbody tr");
+  rows.forEach(row => {
+    const sB = parseInt(row.querySelector(".r-sev-b").value);
+    const fB = parseInt(row.querySelector(".r-freq-b").value);
+    const scoreB = sB * fB;
+    const badgeB = row.querySelector(".score-before");
+    badgeB.textContent = `${scoreB}(${getRankText(scoreB)})`;
+    badgeB.className = `score-before score-badge ${getRankClass(scoreB)}`;
+
+    const sA = parseInt(row.querySelector(".r-sev-a").value);
+    const fA = parseInt(row.querySelector(".r-freq-a").value);
+    const scoreA = sA * fA;
+    const badgeA = row.querySelector(".score-after");
+    badgeA.textContent = `${scoreA}(${getRankText(scoreA)})`;
+    badgeA.className = `score-after score-badge ${getRankClass(scoreA)}`;
+  });
+  handleInputChange();
+}
+
+function getRankText(s) { return s >= 12 ? 'Ⅲ' : (s >= 6 ? 'Ⅱ' : 'Ⅰ'); }
+function getRankClass(s) { return s >= 12 ? 'rank-3' : (s >= 6 ? 'rank-2' : 'rank-1'); }
+
+let autoSaveTimer = null;
+let autoUploadTimer = null;
+
+function handleInputChange() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(async () => {
+    await saveDraft();
+    setHasPendingSync(true);
+
+    // オンラインかつURL設定済みの場合は入力停止3秒後にバックグラウンド自動送信
+    if (navigator.onLine && localStorage.getItem("gasWebAppUrl")) {
+      clearTimeout(autoUploadTimer);
+      autoUploadTimer = setTimeout(() => {
+        syncToGoogleDrive(false);
+      }, 3000);
+    }
+  }, 600);
+}
+
+// 「記録を保存 (自動同期)」ボタン押下時の処理（オフラインでも確実にローカル保存＋オンラインなら即時同期）
+async function saveAndSyncNow() {
+  await saveDraft();
+  setHasPendingSync(true);
+
+  const gasUrl = localStorage.getItem("gasWebAppUrl");
+  if (!gasUrl) {
+    alert("端末内に記録を保存しました。\nPC・スマホ間で共有するには「同期設定」からGASのURLを設定してください。");
+    return;
+  }
+
+  if (!navigator.onLine) {
+    document.getElementById("syncStatus").textContent = "オフライン保存完了 (Wi-Fi等の通信復帰時に自動同期されます)";
+    alert("現在オフラインのため、端末内に記録を安全に保存しました。\nWi-Fi等に繋がると自動的にGoogleドライブへ同期・共有されます。");
+    return;
+  }
+
+  await syncToGoogleDrive(true);
+}
+
+async function saveDraft() {
+  if (!db) return;
+  const formData = collectFormData();
+  const dateStr = formData.date || new Date().toISOString().split('T')[0];
+  const yearMonth = dateStr.substring(0, 7);
+  const reportKey = `${formData.siteName || '未指定'}_${formData.companyName || '未指定'}_${dateStr}`;
+  
+  try {
+    const tx = db.transaction("ky_reports", "readwrite");
+    tx.objectStore("ky_reports").put({ key: "draft_current", data: formData, time: new Date().toISOString() });
+    if (formData.siteName && formData.companyName) {
+      tx.objectStore("ky_reports").put({ 
+        key: reportKey, data: formData, site: formData.siteName, company: formData.companyName, month: yearMonth, time: new Date().toISOString() 
+      });
+    }
+    const modeLabel = navigator.onLine ? "端末内に自動保存完了" : "オフライン自動保存完了";
+    document.getElementById("syncStatus").textContent = `${modeLabel} (` + new Date().toLocaleTimeString() + ")";
+  } catch (err) { console.error("Save Draft Error:", err); }
+}
+
+function saveDraftSync() {
+  if (!db) return;
+  const formData = collectFormData();
+  const dateStr = formData.date || new Date().toISOString().split('T')[0];
+  const yearMonth = dateStr.substring(0, 7);
+  const reportKey = `${formData.siteName || '未指定'}_${formData.companyName || '未指定'}_${dateStr}`;
+  try {
+    const tx = db.transaction("ky_reports", "readwrite");
+    tx.objectStore("ky_reports").put({ key: "draft_current", data: formData, time: new Date().toISOString() });
+    if (formData.siteName && formData.companyName) {
+      tx.objectStore("ky_reports").put({ key: reportKey, data: formData, site: formData.siteName, company: formData.companyName, month: yearMonth, time: new Date().toISOString() });
+    }
+  } catch (err) { console.error("Sync Save Error:", err); }
+}
+
+async function syncToGoogleDrive(showAlert = true) {
+  const gasUrl = localStorage.getItem("gasWebAppUrl");
+  if (!gasUrl) {
+    if (showAlert) {
+      alert("Google Apps ScriptのURLが設定されていません。\n「同期設定」画面からURLを設定してください。");
+      openSettingsScreen();
+    }
+    return;
+  }
+
+  if (!navigator.onLine) {
+    setHasPendingSync(true);
+    if (showAlert) {
+      alert("現在オフラインのため送信できません。端末内に保存済みですので、Wi-Fi等に繋がり次第自動で同期されます。");
+    }
+    return;
+  }
+
+  const syncStatus = document.getElementById("syncStatus");
+  const indicator = document.getElementById("networkIndicator");
+  syncStatus.textContent = "Googleドライブへ全件・マスタ同期中...";
+  indicator.className = "status-indicator status-syncing";
+
+  try {
+    const allReports = await new Promise((resolve) => {
+      if (!db) { resolve([]); return; }
+      const tx = db.transaction("ky_reports", "readonly");
+      const req = tx.objectStore("ky_reports").getAll();
+      req.onsuccess = () => {
+        const list = req.result
+          .filter(item => item.key !== "draft_current" && !pendingDeletions.has(item.key))
+          .map(item => item.data);
+        resolve(list);
+      };
+      req.onerror = () => resolve([]);
+    });
+
+    const currentData = collectFormData();
+    if (currentData.siteName && currentData.companyName) {
+      const idx = allReports.findIndex(r => r.siteName === currentData.siteName && r.companyName === currentData.companyName && r.date === currentData.date);
+      if (idx >= 0) {
+        allReports[idx] = currentData;
+      } else {
+        allReports.push(currentData);
+      }
+    }
+
+    const masters = getCurrentMastersPayload();
+    siteMaster = masters.siteMaster;
+    companyMaster = masters.companyMaster;
+    machineryMaster = masters.machineryMaster;
+    fullPresetData = masters.customPresetMaster;
+    localStorage.setItem("siteMaster", JSON.stringify(siteMaster));
+    localStorage.setItem("companyMaster", JSON.stringify(companyMaster));
+    localStorage.setItem("machineryMaster", JSON.stringify(machineryMaster));
+    localStorage.setItem("customPresetMaster", JSON.stringify(fullPresetData));
+    saveDeletedMasters();
+
+    const payload = {
+      allReports: allReports,
+      masters: masters,
+      ...masters
+    };
+
+    await fetch(gasUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    setHasPendingSync(false);
+    renderMasterDropdowns();
+    renderMachineryDropdown();
+    updateAllRowSelects();
+
+    syncStatus.textContent = "Googleドライブ同期完了 (" + new Date().toLocaleTimeString() + ")";
+    indicator.className = "status-indicator status-online";
+    if (showAlert) {
+      alert("報告書および各種マスタデータをGoogleドライブへ同期しました！（PC・スマホ間で共有されます）");
+    }
+
+  } catch (err) {
+    setHasPendingSync(true);
+    syncStatus.textContent = "同期待機中 (通信エラー)";
+    indicator.className = navigator.onLine ? "status-indicator status-online" : "status-indicator status-offline";
+    if (showAlert) {
+      alert("同期中にエラーが発生しました（データは端末内に保持されています）: " + err.message);
+    }
+  }
+}
+
+async function fetchReportsFromDrive(showAlert = true) {
+  const gasUrl = localStorage.getItem("gasWebAppUrl");
+  if (!gasUrl) {
+    if (showAlert) alert("Google Apps ScriptのURLが設定されていません。");
+    return;
+  }
+  if (!navigator.onLine) {
+    if (showAlert) alert("現在オフラインです。Wi-Fi等に繋がってから再度お試しください。");
+    return;
+  }
+
+  try {
+    const res = await fetch(gasUrl);
+    const rawResponse = await res.json();
+
+    if (rawResponse && typeof rawResponse === "object" && !Array.isArray(rawResponse)) {
+      if (rawResponse.masters) {
+        applyMastersFromDrive(rawResponse.masters);
+      }
+      if (rawResponse.data && typeof rawResponse.data === "object" && !Array.isArray(rawResponse.data)) {
+        if (rawResponse.data.masters) {
+          applyMastersFromDrive(rawResponse.data.masters);
+        }
+      }
+    }
+
+    const dataList = Array.isArray(rawResponse)
+      ? rawResponse
+      : (rawResponse.data && Array.isArray(rawResponse.data)
+          ? rawResponse.data
+          : (rawResponse.reports || rawResponse.allReports || (rawResponse.data && rawResponse.data.reports) || []));
+
+    if (Array.isArray(dataList) && dataList.length > 0) {
+      await new Promise((resolve) => {
+        const tx = db.transaction("ky_reports", "readwrite");
+        const store = tx.objectStore("ky_reports");
+        let validCount = 0;
+
+        dataList.forEach((item) => {
+          const d = item.data || item;
+          const siteName = d.siteName || d.現場名 || "";
+          if (!siteName) return;
+          let dateStr = normalizeDateStr(d.実施日 || d.date || d.kyDate) || new Date().toISOString().split('T')[0];
+          d.date = dateStr;
+          d.実施日 = dateStr;
+          const companyName = d.companyName || d.協力会社名 || "（協力会社なし）";
+          const reportKey = `${siteName}_${companyName}_${dateStr}`;
+          if (!pendingDeletions.has(reportKey)) {
+            store.put({
+              key: reportKey,
+              data: d,
+              site: siteName,
+              company: companyName,
+              month: dateStr.substring(0, 7),
+              time: new Date().toISOString()
+            });
+            validCount++;
+          }
+        });
+
+        tx.oncomplete = () => {
+          renderMasterDropdowns();
+          renderMachineryDropdown();
+          updateAllRowSelects();
+          if (document.getElementById("masterModal").style.display === "flex") renderMasterLists();
+          if (document.getElementById("machineryMasterModal").style.display === "flex") renderMachineryMasterList();
+          if (document.getElementById("presetManageModal").style.display === "flex") renderPresetList();
+          if (document.getElementById("loadModal").style.display === "flex") renderSavedTree();
+          if (showAlert) {
+            alert(`Googleドライブから ${validCount} 件の報告書データと各種マスタを正常に反映・同期しました！`);
+          }
+          resolve();
+        };
+      });
+    } else {
+      renderMasterDropdowns();
+      renderMachineryDropdown();
+      updateAllRowSelects();
+      if (document.getElementById("masterModal").style.display === "flex") renderMasterLists();
+      if (document.getElementById("machineryMasterModal").style.display === "flex") renderMachineryMasterList();
+      if (document.getElementById("presetManageModal").style.display === "flex") renderPresetList();
+      if (showAlert) {
+        alert("各種マスタデータを反映しました（保存済みの報告書データはありません）。");
+      }
+    }
+  } catch (e) {
+    if (showAlert) alert("ドライブからの読み込みに失敗しました: " + e.message);
+  }
+}
+
+function loadDraft() {
+  return new Promise((resolve) => {
+    if (!db) { resolve(); return; }
+    const tx = db.transaction("ky_reports", "readonly");
+    const req = tx.objectStore("ky_reports").get("draft_current");
+    req.onsuccess = () => {
+      if (req.result && req.result.data) {
+        applyDataToForm(req.result.data);
+      } else {
+        clearAllFormData();
+      }
+      resolve();
+    };
+    req.onerror = () => resolve();
+  });
+}
+
+function applyDataToForm(data) {
+  document.getElementById("siteSelect").value = data.siteName || data.現場名 || "";
+  document.getElementById("companySelect").value = data.companyName || data.協力会社名 || "";
+  document.getElementById("kyDate").value = normalizeDateStr(data.実施日 || data.date || data.kyDate) || new Date().toISOString().split('T')[0];
+  document.getElementById("weather").value = data.weather || data.天候 || "";
+  document.getElementById("todayWorkContent").value = data.todayWorkContent || data.本日の作業内容 || "";
+  document.getElementById("todayMachineryContent").value = data.todayMachineryContent || data.使用する機械等 || "";
+  document.getElementById("targetGoal").value = data.targetGoal || data.行動目標 || "";
+  document.getElementById("pointingCall").value = data.pointingCall || data.指差し呼称 || "";
+  document.getElementById("safetyInstruction").value = data.safetyInstruction || data.安全指示事項 || "";
+
+  document.getElementById("riskTbody").innerHTML = "";
+  const risks = data.risks || data.工程別リスクアセスメント || [];
+  if (risks.length > 0) {
+    risks.forEach(r => addRiskRow(r));
+  } else {
+    for (let i = 0; i < 3; i++) addRiskRow();
+  }
+
+  Object.keys(signatures).forEach(k => delete signatures[k]);
+  document.querySelectorAll(".sign-preview").forEach(img => img.src = "");
+  const sigs = data.signatures || data.確認欄 || {};
+  if (sigs) {
+    Object.assign(signatures, sigs);
+    Object.keys(signatures).forEach(k => {
+      const img = document.getElementById("img_sign_" + k);
+      if (img) img.src = signatures[k];
+    });
+  }
+  syncPrintMirrors();
+}
+
+function collectFormData() {
+  const risks = [];
+  document.querySelectorAll("#riskTbody tr").forEach(row => {
+    risks.push({
+      task: row.querySelector(".r-task").value,
+      hazard: row.querySelector(".r-hazard").value,
+      severityBefore: parseInt(row.querySelector(".r-sev-b").value),
+      freqBefore: parseInt(row.querySelector(".r-freq-b").value),
+      measure: row.querySelector(".r-measure").value,
+      severityAfter: parseInt(row.querySelector(".r-sev-a").value),
+      freqAfter: parseInt(row.querySelector(".r-freq-a").value)
+    });
+  });
+  const dateStr = normalizeDateStr(document.getElementById("kyDate").value) || new Date().toISOString().split('T')[0];
+  const masters = getCurrentMastersPayload();
+  return {
+    siteName: document.getElementById("siteSelect").value,
+    companyName: document.getElementById("companySelect").value,
+    date: dateStr,
+    実施日: dateStr,
+    weather: document.getElementById("weather").value,
+    todayWorkContent: document.getElementById("todayWorkContent").value,
+    todayMachineryContent: document.getElementById("todayMachineryContent").value,
+    targetGoal: document.getElementById("targetGoal").value,
+    pointingCall: document.getElementById("pointingCall").value,
+    safetyInstruction: document.getElementById("safetyInstruction").value,
+    risks: risks,
+    signatures: signatures,
+    siteMaster: masters.siteMaster,
+    companyMaster: masters.companyMaster,
+    machineryMaster: masters.machineryMaster,
+    customPresetMaster: masters.customPresetMaster
+  };
+}
+
+function openLoadModal() {
+  pendingDeletions.clear();
+  document.getElementById("filterSite").innerHTML = '<option value="">-- 全現場 --</option>' + siteMaster.map(s => `<option value="${s}">${s}</option>`).join('');
+  document.getElementById("filterCompany").innerHTML = '<option value="">-- 全協力会社 --</option>' + companyMaster.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById("filterMonth").value = "";
+  renderSavedTree();
+  document.getElementById("loadModal").style.display = "flex";
+}
+
+async function closeLoadModal() {
+  if (db && pendingDeletions.size > 0) {
+    await commitPendingDeletions();
+    setHasPendingSync(true);
+    if (navigator.onLine && localStorage.getItem("gasWebAppUrl")) {
+      syncToGoogleDrive(false);
+    }
+  }
+  document.getElementById("loadModal").style.display = "none";
+}
+
+function commitPendingDeletions() {
+  return new Promise((resolve) => {
+    if (!db || pendingDeletions.size === 0) { resolve(); return; }
+    const tx = db.transaction("ky_reports", "readwrite");
+    const store = tx.objectStore("ky_reports");
+    pendingDeletions.forEach(key => store.delete(key));
+    tx.oncomplete = () => { pendingDeletions.clear(); resolve(); };
+    tx.onerror = () => resolve();
+  });
+}
+
+function commitPendingDeletionsSync() {
+  if (!db || pendingDeletions.size === 0) return;
+  try {
+    const tx = db.transaction("ky_reports", "readwrite");
+    const store = tx.objectStore("ky_reports");
+    pendingDeletions.forEach(key => store.delete(key));
+    pendingDeletions.clear();
+  } catch (e) { console.error(e); }
+}
+
+function toggleTree(elem) {
+  const children = elem.nextElementSibling;
+  const icon = elem.querySelector(".toggle-icon");
+  if (children) {
+    children.classList.toggle("open");
+    if (icon) icon.textContent = children.classList.contains("open") ? "▼" : "▶";
+  }
+}
+
+function renderSavedTree() {
+  if (!db) return;
+  const siteFilter = document.getElementById("filterSite").value;
+  const compFilter = document.getElementById("filterCompany").value;
+  const monthFilter = document.getElementById("filterMonth").value;
+  const container = document.getElementById("savedTreeContainer");
+  container.innerHTML = "";
+  document.getElementById("selectAllSaved").checked = false;
+
+  const tx = db.transaction("ky_reports", "readonly");
+  const req = tx.objectStore("ky_reports").getAll();
+  req.onsuccess = () => {
+    const list = req.result.filter(item => item.key !== "draft_current" && !pendingDeletions.has(item.key));
+    const treeData = {};
+    list.forEach(item => {
+      const d = item.data;
+      const site = d.siteName || d.現場名 || "";
+      if (!site) return;
+      const comp = d.companyName || d.協力会社名 || "（未指定協力会社）";
+      const normDate = normalizeDateStr(d.実施日 || d.date) || new Date().toISOString().split('T')[0];
+      const month = normDate.substring(0, 7);
+
+      if (siteFilter && site !== siteFilter) return;
+      if (compFilter && comp !== compFilter) return;
+      if (monthFilter && month !== monthFilter) return;
+
+      if (!treeData[site]) treeData[site] = {};
+      if (!treeData[site][comp]) treeData[site][comp] = {};
+      if (!treeData[site][comp][month]) treeData[site][comp][month] = [];
+      d.date = normDate;
+      treeData[site][comp][month].push(item);
+    });
+
+    if (Object.keys(treeData).length === 0) {
+      container.innerHTML = '<div style="padding:15px; text-align:center; font-size:0.8em; color:#777;">該当する過去KY報告書データはありません。</div>';
+      return;
+    }
+
+    for (const site in treeData) {
+      let siteTotal = 0;
+      for (const comp in treeData[site]) {
+        for (const month in treeData[site][comp]) siteTotal += treeData[site][comp][month].length;
+      }
+      const siteDiv = document.createElement("div");
+      siteDiv.innerHTML = `
+        <div class="tree-folder-site" onclick="toggleTree(this)">
+          <span><span class="toggle-icon">▼</span> 🏗 工事現場: ${site} (計 ${siteTotal} 件)</span>
+          <div style="display:flex; gap:6px;" onclick="event.stopPropagation()">
+            <button class="btn btn-info" style="font-size:0.62em; padding:1px 5px;" onclick="printFolderGroup('site', '${site}')">現場全件印刷</button>
+            <button class="btn btn-danger" style="font-size:0.62em; padding:1px 5px;" onclick="deleteFolderGroup('site', '${site}')">現場削除</button>
+          </div>
+        </div>
+        <div class="tree-children open"></div>
+      `;
+      const siteChildren = siteDiv.querySelector(".tree-children");
+
+      for (const comp in treeData[site]) {
+        let compTotal = 0;
+        for (const month in treeData[site][comp]) compTotal += treeData[site][comp][month].length;
+        const compDiv = document.createElement("div");
+        compDiv.innerHTML = `
+          <div class="tree-folder-company" onclick="toggleTree(this)">
+            <span><span class="toggle-icon">▼</span> 📂 協力会社: ${comp} (${compTotal} 件)</span>
+            <div style="display:flex; gap:6px;" onclick="event.stopPropagation()">
+              <button class="btn btn-info" style="font-size:0.62em; padding:1px 5px;" onclick="printFolderGroup('company', '${site}', '${comp}')">会社全件印刷</button>
+            </div>
+          </div>
+          <div class="tree-children open"></div>
+        `;
+        const compChildren = compDiv.querySelector(".tree-children");
+
+        for (const month in treeData[site][comp]) {
+          const reports = treeData[site][comp][month];
+          const monthDiv = document.createElement("div");
+          monthDiv.innerHTML = `
+            <div class="tree-folder-month" onclick="toggleTree(this)">
+              <span><span class="toggle-icon">▼</span> 📂 ${month} (${reports.length} 件)</span>
+              <div style="display:flex; gap:6px;" onclick="event.stopPropagation()">
+                <button class="btn btn-info" style="font-size:0.6em; padding:1px 5px;" onclick="printFolderGroup('month', '${site}', '${comp}', '${month}')">月別印刷</button>
+              </div>
+            </div>
+            <div class="tree-children open"></div>
+          `;
+          const monthChildren = monthDiv.querySelector(".tree-children");
+
+          reports.forEach(item => {
+            const d = item.data;
+            const repDiv = document.createElement("div");
+            repDiv.className = "tree-report-item";
+            repDiv.innerHTML = `
+              <div style="display:flex; align-items:center; gap:6px;">
+                <input type="checkbox" class="saved-item-chk" value="${item.key}">
+                <span>📄 <b>${d.siteName || d.現場名}</b> &nbsp; ${d.date} (天候: ${d.weather || '未選択'})</span>
+              </div>
+              <div style="display:flex; gap:4px;">
+                <button class="btn btn-primary" style="font-size:0.65em; padding:1px 6px;" onclick="loadReportByKey('${item.key}')">開く・編集</button>
+                <button class="btn btn-info" style="font-size:0.65em; padding:1px 6px;" onclick="printSingleReport('${item.key}')">印刷</button>
+                <button class="btn btn-danger" style="font-size:0.65em; padding:1px 6px;" onclick="deleteSingleReport('${item.key}')">削除</button>
+              </div>
+            `;
+            monthChildren.appendChild(repDiv);
+          });
+          compChildren.appendChild(monthDiv);
+        }
+        siteChildren.appendChild(compDiv);
+      }
+      container.appendChild(siteDiv);
+    }
+  };
+}
+
+function toggleSelectAllSaved(chk) {
+  document.querySelectorAll(".saved-item-chk").forEach(c => c.checked = chk.checked);
+}
+
+function loadReportByKey(key) {
+  const tx = db.transaction("ky_reports", "readonly");
+  const req = tx.objectStore("ky_reports").get(key);
+  req.onsuccess = () => {
+    if (req.result && req.result.data) {
+      applyDataToForm(req.result.data);
+      const draftTx = db.transaction("ky_reports", "readwrite");
+      draftTx.objectStore("ky_reports").put({ key: "draft_current", data: req.result.data, time: new Date().toISOString() });
+      closeLoadModal();
+      alert("選択された報告書を画面に復元しました。");
+    }
+  };
+}
+
+function deleteSingleReport(key) {
+  if (confirm("この報告書データを削除予定に追加しますか？（モーダルを閉じると確定保存されます）")) {
+    pendingDeletions.add(key);
+    renderSavedTree();
+  }
+}
+
+function deleteSelectedSavedReports() {
+  const selectedKeys = Array.from(document.querySelectorAll(".saved-item-chk:checked")).map(c => c.value);
+  if (selectedKeys.length === 0) { alert("削除する報告書を選択してください。"); return; }
+  if (confirm(`選択した ${selectedKeys.length} 件の報告書データを削除予定に追加しますか？`)) {
+    selectedKeys.forEach(key => pendingDeletions.add(key));
+    renderSavedTree();
+  }
+}
+
+function deleteFolderGroup(type, siteName) {
+  if (confirm(`「${siteName}」現場に含まれるすべての報告書データを削除予定に追加しますか？`)) {
+    const tx = db.transaction("ky_reports", "readonly");
+    const req = tx.objectStore("ky_reports").getAll();
+    req.onsuccess = () => {
+      req.result.forEach(item => {
+        if (item.key !== "draft_current" && item.data && (item.data.siteName === siteName || item.data.現場名 === siteName)) {
+          pendingDeletions.add(item.key);
+        }
+      });
+      renderSavedTree();
+    };
+  }
+}
+
+function printSingleReport(key) {
+  const tx = db.transaction("ky_reports", "readonly");
+  const req = tx.objectStore("ky_reports").get(key);
+  req.onsuccess = () => {
+    if (req.result && req.result.data) {
+      generateBatchPrintHTML([req.result.data]);
+      document.body.classList.add("batch-printing");
+      window.print();
+      setTimeout(() => { document.body.classList.remove("batch-printing"); document.getElementById("batchPrintContainer").innerHTML = ""; }, 1000);
+    }
+  };
+}
+
+function printFolderGroup(level, site, comp, month) {
+  const tx = db.transaction("ky_reports", "readonly");
+  const req = tx.objectStore("ky_reports").getAll();
+  req.onsuccess = () => {
+    const list = req.result.filter(item => item.key !== "draft_current" && !pendingDeletions.has(item.key));
+    const targetDataList = [];
+    list.forEach(item => {
+      const d = item.data;
+      const dSite = d.siteName || d.現場名 || "";
+      const dComp = d.companyName || d.協力会社名 || "";
+      const normDate = normalizeDateStr(d.実施日 || d.date) || new Date().toISOString().split('T')[0];
+      const itemMonth = normDate.substring(0, 7);
+      if (level === 'site' && dSite === site) targetDataList.push(d);
+      else if (level === 'company' && dSite === site && dComp === comp) targetDataList.push(d);
+      else if (level === 'month' && dSite === site && dComp === comp && itemMonth === month) targetDataList.push(d);
+    });
+    if (targetDataList.length === 0) { alert("印刷対象のデータがありません。"); return; }
+    generateBatchPrintHTML(targetDataList);
+    document.body.classList.add("batch-printing");
+    window.print();
+    setTimeout(() => { document.body.classList.remove("batch-printing"); document.getElementById("batchPrintContainer").innerHTML = ""; }, 1000);
+  };
+}
+
+function printSelectedSavedReports() {
+  const selectedKeys = Array.from(document.querySelectorAll(".saved-item-chk:checked")).map(c => c.value);
+  if (selectedKeys.length === 0) { alert("一括印刷する報告書を選択してください。"); return; }
+  const tx = db.transaction("ky_reports", "readonly");
+  const req = tx.objectStore("ky_reports").getAll();
+  req.onsuccess = () => {
+    const printDataList = req.result.filter(item => selectedKeys.includes(item.key) && !pendingDeletions.has(item.key)).map(item => item.data);
+    generateBatchPrintHTML(printDataList);
+    document.body.classList.add("batch-printing");
+    window.print();
+    setTimeout(() => { document.body.classList.remove("batch-printing"); document.getElementById("batchPrintContainer").innerHTML = ""; }, 1000);
+  };
+}
+
+function generateBatchPrintHTML(dataList) {
+  const container = document.getElementById("batchPrintContainer");
+  container.innerHTML = "";
+  dataList.forEach((data) => {
+    const page = document.createElement("div");
+    page.className = "print-page";
+    let riskRowsHTML = "";
+    (data.risks || []).forEach(r => {
+      const taskText = r.task ?? r.作業名 ?? "";
+      const hazardText = r.hazard ?? r.危険要因 ?? "";
+      const measureText = r.measure ?? r.安全対策 ?? "";
+      if (hasIncompleteRiskField(taskText, hazardText, measureText)) return;
+
+      const scoreB = (r.severityBefore || 3) * (r.freqBefore || 3);
+      const scoreA = (r.severityAfter || 3) * (r.freqAfter || 1);
+      riskRowsHTML += `
+        <tr>
+          <td style="text-align:left; white-space:pre-wrap; line-height:1.12;">${hazardText}</td>
+          <td>${r.severityBefore || 3}</td>
+          <td>${r.freqBefore || 3}</td>
+          <td><span class="score-badge ${getRankClass(scoreB)}">${scoreB}(${getRankText(scoreB)})</span></td>
+          <td style="text-align:left; white-space:pre-wrap; line-height:1.12;">${measureText}</td>
+          <td>${r.severityAfter || 3}</td>
+          <td>${r.freqAfter || 1}</td>
+          <td><span class="score-badge ${getRankClass(scoreA)}">${scoreA}(${getRankText(scoreA)})</span></td>
+        </tr>`;
+    });
+
+    let workerSignsHTML = "";
+    const sigs = data.signatures || {};
+    for (let i = 1; i <= 10; i++) {
+      workerSignsHTML += `<div class="sign-card"><div>作業員 ${i}</div><img class="sign-preview" src="${sigs[`worker_${i}`] || ''}" alt="未署名"></div>`;
+    }
+
+    page.innerHTML = `
+      <div style="padding:2px;">
+        <div style="text-align:center; font-size:1.0rem; font-weight:bold; margin-bottom:2px;">リスクアセスメント危険予知活動報告書</div>
+        <fieldset style="border:1px solid #333; padding:2px 4px; margin-bottom:2px;">
+          <legend style="font-size:0.7em; font-weight:bold;">基本情報</legend>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); font-size:0.7em;">
+            <div><b>現場名:</b> ${data.siteName || ''}</div>
+            <div><b>協力会社:</b> ${data.companyName || ''}</div>
+            <div><b>実施日:</b> ${data.date || ''}</div>
+            <div><b>天候:</b> ${data.weather || ''}</div>
+          </div>
+        </fieldset>
+        <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:4px; margin-bottom:2px; font-size:0.7em;">
+          <div style="border:1px solid #333; padding:3px;"><b>本日の作業内容:</b><br>${data.todayWorkContent || ''}</div>
+          <div style="border:1px solid #333; padding:3px;"><b>使用する機械等:</b><br>${data.todayMachineryContent || ''}</div>
+        </div>
+        <h3 style="font-size:0.7em; margin:1px 0;">工程別リスクアセスメント</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:0.56em;" border="1">
+          <thead>
+            <tr>
+              <th style="width:28%;">予測される危険要因</th>
+              <th style="width:5%;">重篤</th><th style="width:5%;">可能性</th><th style="width:9%;">対策前</th>
+              <th style="width:34%;">安全対策 (管理策)</th>
+              <th style="width:5%;">重篤</th><th style="width:5%;">可能性</th><th style="width:9%;">対策後</th>
+            </tr>
+          </thead>
+          <tbody>${riskRowsHTML}</tbody>
+        </table>
+        <div style="border:1px solid #333; padding:3px; margin:2px 0; font-size:0.7em; line-height:1.15;">
+          <div><b>行動目標:</b> ${data.targetGoal || ''} / <b>指差し呼称:</b> ${data.pointingCall || ''}</div>
+          <div style="white-space:pre-wrap;"><b>元方よりの安全指示事項:</b> ${data.safetyInstruction || ''}</div>
+        </div>
+        <h3 style="font-size:0.65em; margin:1px 0;">確認欄</h3>
+        <div class="sign-grid confirm-sign-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:2px;">
+          <div class="sign-card"><div>統括安全衛生責任者</div><img class="sign-preview" src="${sigs.motouke || ''}"></div>
+          <div class="sign-card"><div>安全担当者</div><img class="sign-preview" src="${sigs.safety || ''}"></div>
+          <div class="sign-card"><div>職長</div><img class="sign-preview" src="${sigs.foreman || ''}"></div>
+        </div>
+        <h3 style="font-size:0.65em; margin:1px 0;">作業参加者名（最大10名）</h3>
+        <div class="sign-grid worker-sign-grid" style="grid-template-columns: repeat(5, 1fr);">${workerSignsHTML}</div>
+      </div>`;
+    container.appendChild(page);
+  });
+}
+
+let canvas, ctx, isDrawing = false;
+function initCanvasEvents() {
+  canvas = document.getElementById("sigCanvas");
+  ctx = canvas.getContext("2d");
+  ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#000";
+
+  const getPos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: (clientX - rect.left) * (canvas.width / rect.width), y: (clientY - rect.top) * (canvas.height / rect.height) };
+  };
+
+  const startDraw = (e) => { e.preventDefault(); isDrawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); };
+  const moveDraw = (e) => { if (!isDrawing) return; e.preventDefault(); const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+  const stopDraw = () => { isDrawing = false; };
+
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", moveDraw);
+  canvas.addEventListener("mouseup", stopDraw);
+  canvas.addEventListener("mouseleave", stopDraw);
+  canvas.addEventListener("touchstart", startDraw, { passive: false });
+  canvas.addEventListener("touchmove", moveDraw, { passive: false });
+  canvas.addEventListener("touchend", stopDraw);
+}
+
+function openSignatureModal(key, title) {
+  currentSigKey = key;
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("sigModal").style.display = "flex";
+  setTimeout(() => {
+    canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+    ctx.lineWidth = 2.5; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#000";
+    clearCanvas();
+  }, 50);
+}
+
+function closeSignatureModal() { document.getElementById("sigModal").style.display = "none"; }
+function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+function saveSignature() {
+  const dataUrl = canvas.toDataURL("image/png");
+  signatures[currentSigKey] = dataUrl;
+  const img = document.getElementById("img_sign_" + currentSigKey);
+  if (img) img.src = dataUrl;
+  closeSignatureModal();
+  handleInputChange();
+}
+
+function clearAllFormData() {
+  document.getElementById("siteSelect").value = "";
+  document.getElementById("companySelect").value = "";
+  document.getElementById("kyDate").value = new Date().toISOString().split('T')[0];
+  document.getElementById("weather").value = "";
+
+  document.getElementById("todayWorkContent").value = "";
+  document.getElementById("todayMachineryContent").value = "";
+  document.getElementById("targetGoal").value = "";
+  document.getElementById("pointingCall").value = "";
+  document.getElementById("safetyInstruction").value = "";
+
+  document.getElementById("riskTbody").innerHTML = "";
+  for (let i = 0; i < 3; i++) addRiskRow();
+
+  Object.keys(signatures).forEach(k => delete signatures[k]);
+  document.querySelectorAll(".sign-preview").forEach(img => img.src = "");
+
+  syncPrintMirrors();
+
+  if (db) {
+    try {
+      const tx = db.transaction("ky_reports", "readwrite");
+      tx.objectStore("ky_reports").delete("draft_current");
+    } catch (e) {
+      console.error("Draft reset error:", e);
+    }
+  }
+}
+
+function resetForm() {
+  if (confirm("入力内容をすべてリセットして新規作成しますか？")) {
+    clearAllFormData();
+    alert("新規作成用にすべてのデータをクリアしました。");
+  }
+}
+</script>
+</body>
+</html>
